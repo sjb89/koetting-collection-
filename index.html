@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>James Koetting Ghana Field Recording Collection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1a1614;
+  --bg-warm: #211e1b;
+  --bg-card: #2a2522;
+  --bg-card-hover: #322d29;
+  --text: #e8e0d8;
+  --text-dim: #a89e94;
+  --text-muted: #78706a;
+  --accent: #c97b3a;
+  --accent-light: #e09a56;
+  --accent-glow: rgba(201,123,58,0.15);
+  --border: #3d3632;
+  --border-light: #4a4340;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'DM Sans', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--accent); color: var(--bg); }
+
+/* HEADER */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(26,22,20,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0.75rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-title {
+  font-family: var(--serif); font-size: 1.1rem;
+  color: var(--text); font-weight: 400;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.header-title span { color: var(--accent); }
+nav { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+nav a {
+  color: var(--text-dim); text-decoration: none;
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.04em;
+  padding: 0.4rem 0.7rem; border-radius: 6px;
+  transition: all 0.2s;
+}
+nav a:hover, nav a.active { color: var(--text); background: var(--bg-card); }
+
+/* HERO */
+.hero {
+  max-width: 1200px; margin: 0 auto;
+  padding: 4rem 2rem 3rem;
+  display: grid; grid-template-columns: 1fr 280px; gap: 3rem;
+  align-items: start;
+}
+.hero-text h1 {
+  font-family: var(--serif); font-size: 3rem;
+  line-height: 1.1; font-weight: 400; color: var(--text);
+  margin-bottom: 1.5rem;
+}
+.hero-text h1 em { color: var(--accent-light); font-style: italic; }
+.hero-text p {
+  font-size: 1.05rem; color: var(--text-dim); line-height: 1.7;
+  max-width: 640px;
+}
+.hero-meta {
+  margin-top: 1.5rem; display: flex; gap: 2rem;
+  font-size: 0.85rem; color: var(--text-muted);
+}
+.hero-meta strong { color: var(--text-dim); display: block; font-weight: 500; }
+.hero-img {
+  position: relative; border-radius: 12px; overflow: hidden;
+  aspect-ratio: 3/4;
+}
+.hero-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: sepia(0.15) contrast(1.05);
+}
+.hero-img::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(26,22,20,0.6), transparent 40%);
+}
+.hero-img figcaption {
+  position: absolute; bottom: 0.75rem; left: 0.75rem; z-index: 1;
+  font-size: 0.75rem; color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+/* SECTIONS */
+.section {
+  max-width: 1200px; margin: 0 auto;
+  padding: 3rem 2rem;
+  display: none;
+}
+.section.active { display: block; }
+.section-title {
+  font-family: var(--serif); font-size: 2rem;
+  margin-bottom: 0.5rem; font-weight: 400;
+}
+.section-subtitle {
+  color: var(--text-dim); font-size: 0.95rem;
+  margin-bottom: 2rem; max-width: 700px;
+}
+.divider {
+  height: 1px; background: var(--border);
+  margin: 2rem 0;
+}
+
+/* RECORDINGS BROWSER */
+.recordings-controls {
+  display: flex; gap: 1rem; align-items: end;
+  flex-wrap: wrap; margin-bottom: 2rem;
+}
+.control-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.control-group label {
+  font-size: 0.75rem; font-weight: 500;
+  color: var(--text-muted); letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+select, .search-input {
+  background: var(--bg-card); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 0.6rem 1rem; font-family: var(--sans);
+  font-size: 0.9rem; min-width: 280px;
+  transition: border-color 0.2s;
+  appearance: none;
+  cursor: pointer;
+}
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23a89e94' fill='none' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 2rem; }
+select:focus, .search-input:focus { outline: none; border-color: var(--accent); }
+.search-input { min-width: 300px; }
+.search-input::placeholder { color: var(--text-muted); }
+
+.tracks-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.track-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.85rem 1rem; border-radius: 8px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.2s; text-decoration: none;
+  color: var(--text);
+}
+.track-item:hover { background: var(--bg-card-hover); border-color: var(--border-light); transform: translateX(4px); }
+.track-num {
+  font-family: var(--mono); font-size: 0.75rem;
+  color: var(--text-muted); min-width: 2rem;
+}
+.track-title { font-size: 0.9rem; flex: 1; }
+.track-link {
+  font-size: 0.75rem; color: var(--accent);
+  font-family: var(--mono); white-space: nowrap;
+  opacity: 0; transition: opacity 0.2s;
+}
+.track-item:hover .track-link { opacity: 1; }
+
+/* NOTEBOOKS */
+.notebook-group {
+  margin-bottom: 2.5rem;
+}
+.notebook-header {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1rem;
+}
+.notebook-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  background: var(--accent-glow); border: 1px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+}
+.notebook-title {
+  font-family: var(--serif); font-size: 1.2rem;
+}
+.notebook-title a {
+  color: var(--text); text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+.notebook-title a:hover { border-color: var(--accent); }
+.insert-list { display: flex; flex-direction: column; gap: 0.35rem; padding-left: 3.5rem; }
+.insert-item {
+  display: block; padding: 0.5rem 0.75rem;
+  font-size: 0.88rem; color: var(--text-dim);
+  text-decoration: none; border-radius: 6px;
+  transition: all 0.2s;
+}
+.insert-item:hover { color: var(--text); background: var(--bg-card); }
+.insert-item::before {
+  content: '↳'; margin-right: 0.5rem;
+  color: var(--text-muted); font-family: var(--mono);
+}
+
+/* GALLERY */
+.gallery-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.gallery-item {
+  border-radius: 8px; overflow: hidden;
+  background: var(--bg-card); border: 1px solid var(--border);
+  transition: all 0.3s; cursor: pointer;
+}
+.gallery-item:hover { transform: translateY(-4px); border-color: var(--border-light); }
+.gallery-item img {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  filter: sepia(0.1); transition: filter 0.3s;
+}
+.gallery-item:hover img { filter: sepia(0); }
+.gallery-item figcaption {
+  padding: 0.6rem 0.75rem; font-size: 0.78rem;
+  color: var(--text-dim); line-height: 1.4;
+}
+
+/* LIGHTBOX */
+.lightbox {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.92);
+  display: none; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: 90vw; max-height: 85vh;
+  object-fit: contain; border-radius: 8px;
+}
+.lightbox-caption {
+  position: absolute; bottom: 2rem;
+  font-size: 0.9rem; color: var(--text-dim);
+  text-align: center; width: 100%;
+}
+.lightbox-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  background: none; border: none; color: var(--text);
+  font-size: 1.5rem; cursor: pointer;
+}
+
+/* PROSE CONTENT */
+.prose { max-width: 720px; }
+.prose h2 { font-family: var(--serif); font-size: 1.6rem; margin: 2rem 0 0.75rem; font-weight: 400; }
+.prose h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: var(--text); }
+.prose p { margin-bottom: 1rem; color: var(--text-dim); }
+.prose p:first-of-type { color: var(--text); }
+.prose a { color: var(--accent-light); text-decoration: underline; text-underline-offset: 3px; }
+.prose em { font-style: italic; color: var(--text); }
+.prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1.25rem; margin: 1.5rem 0;
+  color: var(--text-dim); font-style: italic;
+}
+.prose .credit { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+/* GLOSSARY */
+.glossary-list { display: flex; flex-direction: column; gap: 1rem; }
+.glossary-term {
+  padding: 1rem; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: 8px;
+}
+.glossary-term dt {
+  font-family: var(--serif); font-size: 1.1rem;
+  color: var(--accent-light); margin-bottom: 0.3rem;
+}
+.glossary-term dd { color: var(--text-dim); font-size: 0.9rem; }
+
+/* BIBLIOGRAPHY */
+.bib-section { margin-bottom: 2rem; }
+.bib-section h3 {
+  font-family: var(--serif); font-size: 1.3rem;
+  margin-bottom: 1rem; font-weight: 400;
+  color: var(--text); border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+.bib-entry {
+  padding: 0.5rem 0; font-size: 0.88rem;
+  color: var(--text-dim); line-height: 1.6;
+  border-bottom: 1px solid rgba(61,54,50,0.4);
+}
+.bib-entry:last-child { border-bottom: none; }
+
+/* CREDITS */
+.credits-list { display: flex; flex-direction: column; gap: 1rem; }
+.credit-item {
+  display: flex; gap: 1rem; align-items: baseline;
+}
+.credit-name {
+  font-family: var(--serif); font-size: 1.1rem;
+  color: var(--text); min-width: 180px;
+}
+.credit-role { color: var(--text-dim); font-size: 0.9rem; }
+
+/* RESOURCES NAV */
+.resources-nav {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem; margin-bottom: 2rem;
+}
+.resource-btn {
+  padding: 0.75rem 1rem; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text-dim); font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s;
+  text-align: left; font-family: var(--sans);
+}
+.resource-btn:hover, .resource-btn.active {
+  border-color: var(--accent); color: var(--text);
+  background: var(--accent-glow);
+}
+.resource-content { display: none; }
+.resource-content.active { display: block; }
+
+/* SEARCH HIGHLIGHT */
+.highlight { background: var(--accent-glow); color: var(--accent-light); padding: 0 2px; border-radius: 2px; }
+
+/* FOOTER */
+.site-footer {
+  max-width: 1200px; margin: 0 auto;
+  padding: 2rem; border-top: 1px solid var(--border);
+  margin-top: 3rem;
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+  font-size: 0.8rem; color: var(--text-muted);
+}
+.site-footer a { color: var(--accent); text-decoration: none; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; padding: 2rem 1rem; }
+  .hero-text h1 { font-size: 2rem; }
+  .hero-img { max-width: 200px; }
+  .header-inner { padding: 0.5rem 1rem; flex-direction: column; gap: 0.5rem; }
+  nav { justify-content: center; }
+  .section { padding: 2rem 1rem; }
+  select, .search-input { min-width: 100%; }
+  .recordings-controls { flex-direction: column; }
+  .credit-item { flex-direction: column; gap: 0.25rem; }
+  .credit-name { min-width: auto; }
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.section.active { animation: fadeIn 0.3s ease-out; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-title"><span>◆</span> Koetting Ghana Field Recordings</div>
+    <nav id="main-nav">
+      <a href="#home" class="active" onclick="showSection('home')">Home</a>
+      <a href="#recordings" onclick="showSection('recordings')">Recordings</a>
+      <a href="#notebooks" onclick="showSection('notebooks')">Notebooks</a>
+      <a href="#gallery" onclick="showSection('gallery')">Gallery</a>
+      <a href="#essays" onclick="showSection('essays')">Essays</a>
+      <a href="#resources" onclick="showSection('resources')">Resources</a>
+      <a href="#credits" onclick="showSection('credits')">Credits</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HOME -->
+<section id="home" class="section active">
+  <div class="hero">
+    <div class="hero-text">
+      <h1>The James Koetting<br><em>Ghana Field Recording</em><br>Collection</h1>
+      <p>A vibrant archive of traditional and popular music recorded across Ghana during the 1970s by ethnomusicologist James Koetting. This collection presents 142 audio reel tapes of musical performances from arts festivals, traditional ceremonies, stage concerts, church services, and informal gatherings throughout the country.</p>
+      <p style="margin-top:1rem;">As one of the largest collections of field recordings from Ghana, this digital archive includes recorded interviews, musical demonstrations, field notebooks, photographs, commentary, and other original source material. The collection highlights Koetting's extensive work with Kasena musicians in Accra (Nima) and the Kasena region near Ghana's border with Burkina Faso, and documents Akan, Ewe, Ga, Dagomba, and other musical traditions.</p>
+      <div class="hero-meta">
+        <div><strong>142</strong> Audio Reels</div>
+        <div><strong>686</strong> Tracks</div>
+        <div><strong>1973–75</strong> Recorded</div>
+      </div>
+      <p style="margin-top:2rem; font-size:0.85rem; color:var(--text-muted);">A project of the <a href="http://www.brown.edu/Departments/Music/graduate/ethnomusicology/" style="color:var(--accent);">Graduate Program in Ethnomusicology</a>, Department of Music, Brown University. Koetting served on the Brown faculty from 1975 until his death in 1984. Supported by the Scott Chanchien Memorial Library Fund.</p>
+    </div>
+    <figure class="hero-img">
+      <img src="https://library.brown.edu/cds/koetting/img/koetting2.jpg" alt="Portrait of James Koetting">
+      <figcaption>James Koetting</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- RECORDINGS -->
+<section id="recordings" class="section">
+  <h2 class="section-title">Field Recordings</h2>
+  <p class="section-subtitle">Browse all 142 reels and 686 tracks from Koetting's fieldwork in Ghana. Select a reel to see its tracks, or search across the entire collection. Clicking a track opens it in the Brown Digital Repository.</p>
+  <div class="recordings-controls">
+    <div class="control-group">
+      <label>Search All Tracks</label>
+      <input type="text" class="search-input" id="track-search" placeholder="e.g. Kasena, jongo, nagila, Nima..." oninput="searchTracks()">
+    </div>
+    <div class="control-group">
+      <label>Browse by Reel</label>
+      <select id="reel-select" onchange="selectReel()">
+        <option value="">— Select a reel —</option>
+      </select>
+    </div>
+  </div>
+  <div id="tracks-container" class="tracks-list"></div>
+  <p id="tracks-empty" style="color:var(--text-muted); font-size:0.9rem; display:none;">No tracks found. Try a different search term.</p>
+</section>
+
+<!-- NOTEBOOKS -->
+<section id="notebooks" class="section">
+  <h2 class="section-title">Field Notebooks</h2>
+  <p class="section-subtitle">Three notebooks—a project log and two recording logs—written mostly in ink on Ghanaian school notebooks. They provide an essential companion and guide to the field tapes, containing accounts of activities, expenses, charts, newspaper clippings, concert programs, and hand-drawn maps. Loose inserts are listed under each notebook.</p>
+  <div id="notebooks-container"></div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="section">
+  <h2 class="section-title">Gallery</h2>
+  <p class="section-subtitle">Photographs from Koetting's Master's thesis featuring Kwasi Badu demonstrating Akan percussion instruments.</p>
+  <div class="gallery-grid" id="gallery-container"></div>
+</section>
+
+<!-- ESSAYS -->
+<section id="essays" class="section">
+  <h2 class="section-title">Essays</h2>
+  <div class="resources-nav" style="margin-bottom:2rem;">
+    <button class="resource-btn active" onclick="showEssay('memoriam')">In Memoriam: James T. Koetting</button>
+    <button class="resource-btn" onclick="showEssay('kleeman')">Janice Kleeman Biography</button>
+  </div>
+
+  <div id="essay-memoriam" class="resource-content active">
+    <div class="prose">
+      <h2>In Memoriam James T. Koetting (1939–1984)</h2>
+      <p>In the early morning hours of Saturday, October 20, 1984, Jim Koetting suffered a massive heart attack and died. The field of ethnomusicology lost one of its finest teachers, scholars, musicians, and colleagues.</p>
+      <p>The suddenness of Jim's death sent shock waves throughout the annual meeting of the Society of Ethnomusicology which he was attending and at which, the previous afternoon, he had delivered a very Koetting-like paper—thorough, deeply versed in its subject matter, imbued with the humor and humanity that was so much Jim's gift.</p>
+      <p>Jim Koetting was the complete ethnomusicologist, and excellent in every dimension of his field. He was a first-rate scholar. Both his Master's thesis and his doctoral dissertation—in African music—were prototypical of the kind of scholarly studies to which we were treated by Jim: thorough, well-researched, finely presented, with an intimacy and love of the music and the music-makers pervading every paragraph. His articles, too, were models of fine scholarship, including "Analysis and Notation of West African Drum Ensemble Music" (<em>Selected Reports</em>, 1:3, 1970) and "The Son Jalisciense: Structural Variety in Relation to a Mexican Forme Fixe" (<em>Essays for a Humanist</em>, 1977). He was the co-author of <em>Worlds of Music</em> (Schirmer, 1984) and was finishing revisions of a book on Ghanaian music for the Greenwood Press.</p>
+      <p>Jim was an excellent teacher. He was willing and always gave of himself in the field, in the classroom, with his colleagues. His classes were large and enthusiastic because of the substantive and rigorous nature of information he imparted and inquiry he encouraged. And what a musician he was! A superb trumpeter and guitarist, he drummed in the African Drum ensemble and was an integral part of any mariachi ensemble. He knew and loved music at every level.</p>
+      <p>The chronicle of Jim Koetting the ethnomusicologist extends from student days in the halcyon years of the Institute for Ethnomusicology at UCLA, through his teaching and travel with Chapman College in Mexico and Africa, to 1975 when he became Assistant Professor of Music at Brown University, a residency broken only by a sabbatical leave (after promotion to Associate Professor at Brown) with a visiting appointment at Indiana University and another semester teaching at sea.</p>
+      <p>The many of us who "grew up together at UCLA" will remember those Wednesday afternoon main seminars followed by dinner at Talpa; with Jim a featured player always. We'll remember the Mariachi and Veracruz ensembles, with Jim always a necessary participant. We'll remember his quiet strength, the wry smile, the sudden burst of laughter at something that struck his fancy just when we thought he was so far away in other thoughts. We'll remember the way he played and spoke about and wrote about music as if it were second nature to him. We'll remember what a kind, and sweet, and strong, and gentle man he was. We'll be sorry for what we have lost and for what we know could have been, but we are all richer for having known and loved him, and we'll always remember, Jim.</p>
+      <p class="credit">— Bonnie C. Wade, University of California, Berkeley<br>©1985 Society for Ethnomusicology. Reproduced by permission.</p>
+    </div>
+  </div>
+
+  <div id="essay-kleeman" class="resource-content">
+    <div class="prose">
+      <h2>Janice Kleeman Biography</h2>
+      <p>In February of 2005, Jan Kleeman, James Koetting's widow, visited the Orwig Music Building for the first time in many years. During that visit she discussed with the Library's plan to publish Koetting's Ghanaian field work online. The original donor of the collection to Brown, she heartily approved, but unfortunately her death in April, 2005 prohibited her granting the final permission or seeing the finished product. Her daughter, Ellen Klicka, granted permission for the project, provided the photo of Koetting recording in Ghana, and also this biography. — <em>Ned Quist, Project Coordinator</em></p>
+      <p>Janice Ellen Kleeman, wife of James T. Koetting, fed her passion for music by joining the academic community as an ethnomusicologist and by giving rock 'n' roll a prominent role in her personal life. Professionally, she obtained three degrees in music and served on Brown's music department faculty. In her youth, she took eight years of classical piano lessons, performed in and directed school musicals, and delighted in rock performers like Elvis and the Beatles.</p>
+      <p>Kleeman earned a B.A. in music from Wellesley College in 1971 and an M.A. from Brown in 1976. Her master's thesis was titled, "Acculturation in the folk music of a Polish-American community in Lackwanna, N.Y." Bonnie C. Wade served as advisor. When Wade went to teach at UC Berkeley, Kleeman followed and completed her Ph.D. in music in 1982 with a dissertation titled "The Origins and Stylistic Development of Polish-American Polka Music."</p>
+      <p>Kleeman met associate professor Koetting while working on her master's degree at Brown, and the two were married in 1984. Koetting died of a heart attack only five months after the wedding, while the couple was in Los Angeles for the Society of Ethnomusicology Annual Conference. With Kleeman's permission, panelist Roderic Knight took Koetting's notes from the conference and edited the paper for publication in <em>Ethnomusicology</em>, Winter 1986.</p>
+      <p>Kleeman, an assistant professor in Brown's music department from 1982 to 1988, taught courses on Asian classical music, European and American folk music, and the theory and method of ethnomusicology. Her unconventional yet very popular course "Rock 'n' Roll Is Here to Stay!" demonstrated the importance of rock in the evolution of our culture through 1970.</p>
+      <p>After her tenure at Brown, Kleeman obtained a master's degree in counseling from Rhode Island College. She held positions at a substance abuse rehabilitation facility, a halfway house, and a residence for troubled youth. She died in 2005 and is survived by her daughter Ellen H. Klicka. — <em>Ellen Klicka</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section id="resources" class="section">
+  <h2 class="section-title">Resources</h2>
+  <div class="resources-nav">
+    <button class="resource-btn active" onclick="showResource('intro')">Introduction</button>
+    <button class="resource-btn" onclick="showResource('design')">Database Design</button>
+    <button class="resource-btn" onclick="showResource('glossary')">Glossary</button>
+    <button class="resource-btn" onclick="showResource('bibliography')">Bibliography</button>
+    <button class="resource-btn" onclick="showResource('discography')">Discography</button>
+  </div>
+  <div id="resource-intro" class="resource-content active">
+    <div class="prose" id="intro-content"></div>
+  </div>
+  <div id="resource-design" class="resource-content">
+    <div class="prose" id="design-content"></div>
+  </div>
+  <div id="resource-glossary" class="resource-content">
+    <div id="glossary-search-wrap" style="margin-bottom:1.5rem;">
+      <input type="text" class="search-input" id="glossary-search" placeholder="Search glossary terms..." oninput="filterGlossary()" style="min-width:100%;max-width:400px;">
+    </div>
+    <dl class="glossary-list" id="glossary-container"></dl>
+  </div>
+  <div id="resource-bibliography" class="resource-content">
+    <div id="bibliography-container"></div>
+  </div>
+  <div id="resource-discography" class="resource-content">
+    <div class="prose" id="discography-content"></div>
+  </div>
+</section>
+
+<!-- CREDITS -->
+<section id="credits" class="section">
+  <h2 class="section-title">Credits</h2>
+  <div class="credits-list">
+    <div class="credit-item"><span class="credit-name">Julie Hunter</span><span class="credit-role">Editorial work on the field recording metadata and glossary, bibliography and discography</span></div>
+    <div class="credit-item"><span class="credit-name">Mark Braun</span><span class="credit-role">Database inventory of the Koetting Field tapes and introductory essay</span></div>
+    <div class="credit-item"><span class="credit-name">Sam Baltimore</span><span class="credit-role">Sound engineer</span></div>
+    <div class="credit-item"><span class="credit-name">Jeff Todd Titon</span><span class="credit-role">Faculty advisor</span></div>
+    <div class="credit-item"><span class="credit-name">Martin Obeng</span><span class="credit-role">Faculty consultant</span></div>
+    <div class="credit-item"><span class="credit-name">Sheila Hogg</span><span class="credit-role">Technical assistant</span></div>
+    <div class="credit-item"><span class="credit-name">Ned Quist</span><span class="credit-role">Project manager</span></div>
+  </div>
+  <div class="divider"></div>
+  <div class="prose">
+    <p>A special thanks to Ellen Klicka who granted permission to publish the Koetting materials, provided the photo on the front page, and wrote a biography of Jan Kleeman, Koetting's widow and donor of the Koetting Collection.</p>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
+<footer class="site-footer">
+  <div>Original collection: <a href="https://library.brown.edu/cds/koetting/">Brown University Library</a> · <a href="https://repository.library.brown.edu/studio/collections/bdr:26157/">Brown Digital Repository</a></div>
+  <div>Graduate Program in Ethnomusicology · Department of Music · Brown University</div>
+</footer>
+
+<script>
+// === DATA ===
+const SITE_DATA = {"tapes":[{"id":"reel2","description":"Reel 2: Legon, Institute of"},{"id":"reel4","description":"Reel 4:Nima, Accra"},{"id":"reel5","description":"Reel 5: Kaneshie, Accra"},{"id":"reel6","description":"Reel 6:Kaneshie, Accra"},{"id":"reel7","description":"Reel 7: Loga"},{"id":"reel9","description":"Reel 9: Loga"},{"id":"reel10","description":"Reel 10: Loga"},{"id":"reel11","description":"Reel 11: Loga"},{"id":"reel12","description":"Reel 12: Loga"},{"id":"reel13","description":"Reel 13: Loga"},{"id":"reel14","description":"Reel 14: Legon"},{"id":"reel15","description":"Reel 15: Nima, Accra"},{"id":"reel16","description":"Reel 16: Nima, Accra"},{"id":"reel17","description":"Reel 17: Nima, Accra"},{"id":"reel18","description":"Reel 18: Legon Hall"},{"id":"reel19","description":"Reel 19: Legon Hall"},{"id":"reel20","description":"Reel 20: Legon Hall"},{"id":"reel21","description":"Reel 21: Navrongo-Agricultural"},{"id":"reel22","description":"Reel 22: Navrongo-Agricultural"},{"id":"reel23","description":"Reel 23: Navrongo-Agricultural"},{"id":"reel24","description":"Reel 24: Navrongo"},{"id":"reel25","description":"Reel 25: Navrongo"},{"id":"reel26","description":"Reel 26: Navrongo"},{"id":"reel27","description":"Reel 27: Navrongo"},{"id":"reel28","description":"Reel 28: Navrongo"},{"id":"reel29","description":"Reel 29: Navrongo"},{"id":"reel30","description":"Reel 30: Navrongo"},{"id":"reel31","description":"Reel 31: Navrongo"},{"id":"reel32","description":"Reel 32: Navrongo"},{"id":"reel33","description":"Reel 33: Navrongo"},{"id":"reel35","description":"Reel 35: Navrongo"},{"id":"reel36","description":"Reel 36: Navrongo "},{"id":"reel37","description":"Reel 37: Jackson Park, Kofidua"},{"id":"reel38","description":"Reel 38: Jackson Park, Kofodua"},{"id":"reel39","description":"Reel 39: Jackson Park, Kofidua"},{"id":"reel40","description":"Reel 40: Jackson Park, Kofidua"},{"id":"reel41","description":"Reel 41: Jackson Park, Kofidua"},{"id":"reel42","description":"Reel 42: Jackson Park, Kofidua"},{"id":"reel43","description":"Reel 43: Jackson Park, Kofidua"},{"id":"reel44","description":"Reel 44: Jackson Park, Kofidua"},{"id":"reel45","description":"Reel 45: Jackson Park, Kofidua"},{"id":"reel46","description":"Reel 46: Jackson Park, Kofidua"},{"id":"reel47","description":"Reel 47: Jackson Park, Kofidua"},{"id":"reel48","description":"Reel 48: Jackson Park, Kofidua"},{"id":"reel49","description":"Reel 49: Jackson Park, Kofidua"},{"id":"reel50","description":"Reel 50: Jackson Park, Kofidua"},{"id":"reel51","description":"Reel 51: Legon Accra"},{"id":"reel52","description":"Reel 52: Navrongo"},{"id":"reel53","description":"Reel 53: Navrongo"},{"id":"reel54","description":"Reel 54: Navrongo"},{"id":"reel55","description":"Reel 55: Navrongo"},{"id":"reel56","description":"Reel 56: Navrongo"},{"id":"reel57","description":"Reel 57: Natunia"},{"id":"reel58","description":"Reel 58: Navrongo"},{"id":"reel59","description":"Reel 59: Navrongo"},{"id":"reel60","description":"Reel 60: Navrongo"},{"id":"reel61","description":"Reel 61: Nima"},{"id":"reel62","description":"Reel 62: Nima"},{"id":"reel63","description":"Reel 63: Nima"},{"id":"reel64","description":"Reel 64: Nima"},{"id":"reel66","description":"Reel 66: Nima"},{"id":"reel67","description":"Reel 67: Nima"},{"id":"reel68","description":"Reel 68: Nima"},{"id":"reel69","description":"Reel 69: Nima"},{"id":"reel70","description":"Reel 70: Nima"},{"id":"reel71","description":"Reel 71: Nima"},{"id":"reel72","description":"Reel 72: Nima"},{"id":"reel73","description":"Reel 73: Legon"},{"id":"reel74","description":"Reel 74: Legon"},{"id":"reel75","description":"Reel 75: Legon"},{"id":"reel76","description":"Reel 76: Legon"},{"id":"reel77","description":"Reel 77: Legon"},{"id":"reel78","description":"Reel 78: Legon"},{"id":"reel79","description":"Reel 79: Legon"},{"id":"reel80","description":"Reel 80: Legon"},{"id":"reel81","description":"Reel 81: Legon"},{"id":"reel82","description":"Reel 82: Legon"},{"id":"reel83","description":"Reel 83: Legon"},{"id":"reel84","description":"Reel 84: University of Ghana"},{"id":"reel85","description":"Reel 85: Abeka, Accra"},{"id":"reel86","description":"Reel 86: Abeka, Accra"},{"id":"reel87","description":"Reel 87: Navrongo, St. Cecilia's"},{"id":"reel88","description":"Reel 88: Navrongo, St. Cecilia's"},{"id":"reel89","description":"Reel 89: Navrongo, Pito House"},{"id":"reel90","description":"Reel 90: Navrongo, Market Place"},{"id":"reel91","description":"Reel 91: Vonania"},{"id":"reel92","description":"Reel 92: Vonania"},{"id":"reel93","description":"Reel 93: Vonania"},{"id":"reel94","description":"Reel 94: Kayoro, Chief's Palace"},{"id":"reel95","description":"Reel 95: Kayoro, Chief's Palace"},{"id":"reel96","description":"Reel 96: Kayoro, Chief's Palace"},{"id":"reel97","description":"Reel 97: Mayoro, Chief's Palace"},{"id":"reel98","description":"Reel 98: Mayoro, Chief's Palace"},{"id":"reel99","description":"Reel 99: Mayoro, Chief's Palace"},{"id":"reel100","description":"Reel 100: Mayoro, Chief's Palace"},{"id":"reel101","description":"Reel 101: Kayoro, Chief's Palace"},{"id":"reel102","description":"Reel 102: Kayoro, Chief's Palace"},{"id":"reel103","description":"Reel 103: Kayoro, Chief's Palace"},{"id":"reel104","description":"Reel 104: Kayoro, Chief's Palace"},{"id":"reel105","description":"Reel 105: Pungu, Chief's Palace"},{"id":"reel107","description":"Reel 107: Pungu, Chief's Palace"},{"id":"reel108","description":"Reel 108: Pungu, Chief's Palace"},{"id":"reel109","description":"Reel 109: Vonania"},{"id":"reel110","description":"Reel 110: Vonania"},{"id":"reel111","description":"Reel 111: Vonania, Alban's"},{"id":"reel112","description":"Reel 112: Vonania, Alban's"},{"id":"reel113","description":"Reel 113: Sandema"},{"id":"reel114","description":"Reel 114: Sandema"},{"id":"reel115","description":"Reel 115: Sandema"},{"id":"reel116","description":"Reel 116: Navrongo, St. Cecilia's"},{"id":"reel117","description":"Reel 117: Navrongo, St. Cecilia's"},{"id":"reel118","description":"Reel 118: Navrongo, St. Cecilia's"},{"id":"reel119","description":"Reel 119: Navrongo, St. Cecilia's"},{"id":"reel120","description":"Reel 120: Mayoro"},{"id":"reel121","description":"Reel 121: Mayoro"},{"id":"reel122","description":"Reel 122: Mayoro"},{"id":"reel123","description":"Reel 123: Wuru"},{"id":"reel124","description":"Reel 124: Wuru"},{"id":"reel125","description":"Reel 125: Kayoro"},{"id":"reel126","description":"Reel 126: Kayoro"},{"id":"reel127","description":"Reel 127: Kayoro"},{"id":"reel128","description":"Reel 128: Kayoro"},{"id":"reel129","description":"Reel 129: Kayoro"},{"id":"reel130","description":"Reel 130: Vonania"},{"id":"reel131","description":"Reel 131: Vonania"},{"id":"reel132","description":"Reel 132: Abeka, Accra"},{"id":"reel133","description":"Reel 133: Abeka, Accra"},{"id":"reel134","description":"Reel 134: Abeka, Accra"},{"id":"reel135","description":"Reel 135: Koforidua - Chief's"},{"id":"reel136","description":"Reel 136: Koforidua - Chief's"},{"id":"reel137","description":"Reel 137: Legon"},{"id":"reel138","description":"Reel 138: Legon"},{"id":"reel139","description":"Reel 139: Legon"},{"id":"reel140","description":"Reel 140: Legon"},{"id":"reel141","description":"Reel 141: Legon, Dance Hall"},{"id":"reel142","description":"Reel 142: Legon, Dance Hall"},{"id":"reel143","description":"Reel 143: Koetting's Residence"},{"id":"reel144","description":"Reel 144: Koetting's Residence"},{"id":"reel145","description":"Reel 145: Legon"},{"id":"reel146","description":"Reel 146: Legon"},{"id":"reel148","description":"Reel 148: Nima, Accra"},{"id":"reel149","description":"Reel 149: University of Ghana"}],"tracks_by_reel":{"reel10":[{"id":"12211424420","description":"Reel 10, Track 01: Nagila nung Kayoro siini ya ba"},{"id":"1221142443437500","description":"Reel 10, Track 02: Pe zara"},{"id":"1221142444875000","description":"Reel 10, Track 03: Kasena vocal piece"}],"reel100":[{"id":"1221143091250000","description":"Reel 100, Track 01: Nagila zura wa na"},{"id":"1221143092656250","description":"Reel 100, Track 02: Nagila ipari we babasa mali mali"},{"id":"1221143093703125","description":"Reel 100, Track 03: Wui demonstration"}],"reel101":[{"id":"1221143094734375","description":"Reel 101, Track 01: Recording test"},{"id":"1221143095734375","description":"Reel 101, Track 02: Bawura ni wa di"},{"id":"1221143096796875","description":"Reel 101, Track 03: Gungolo ..."},{"id":"1221143097812500","description":"Reel 101, Track 04: Dua magi kawem"},{"id":"1221143098828125","description":"Reel 101, Track 05: Di lori yo patasi"},{"id":"1221143386437500","description":"Reel 101, Track 06: Zulu songo, zulu bara bare"}],"reel102":[{"id":"1221143099859375","description":"Reel 102, Track 01: Sinye ..."},{"id":"1221143100859375","description":"Reel 102, Track 02: Di bam nu kada"},{"id":"1221143101890625","description":"Reel 102, Track 03: Debam kwara"},{"id":"1221143102953125","description":"Reel 102, Track 04: Ba n gwe sisena"},{"id":"122114310446875","description":"Reel 102, Track 05: Kawuri"},{"id":"1221143152796875","description":"Reel 102, Track 06: Chakana (Kamana) pe yello"}],"reel103":[{"id":"1221143106140625","description":"Reel 103, Track 01: Pandana kana..."},{"id":"1221143107171875","description":"Reel 103, Track 02: Bolo bolo"},{"id":"1221143108187500","description":"Reel 103, Track 03: Music in Kayoro"},{"id":"1221143109203125","description":"Reel 103, Track 04: Ane kama mama sene yi a wo bolo"},{"id":"1221143110218750","description":"Reel 103, Track 05: Zimbala tu dzon la..."},{"id":"1221143111281250","description":"Reel 103, Track 06: Kayoro nyim kamboe logo ku dziga kwera"}],"reel104":[{"id":"1221143112359375","description":"Reel 104, Track 01: Kachala..."},{"id":"1221143113359375","description":"Reel 104, Track 02: Kalno lin kori zana pero dona agononi"},{"id":"1221143114375000","description":"Reel 104, Track 03: Venga parts"},{"id":"1221143115375000","description":"Reel 104, Track 04: Nagila parts"},{"id":"1221143116375000","description":"Reel 104, Track 05: Pe zara"},{"id":"1221143117375000","description":"Reel 104, Track 06: Jongo"},{"id":"1221143118421875","description":"Reel 104, Track 07: Wui demonstration"},{"id":"1221143119406250","description":"Reel 104, Track 08: Calabash guem"},{"id":"1221143120890625","description":"Reel 104, Track 09: Calabash jongo"}],"reel105":[{"id":"12211431220","description":"Reel 105, Track 01: Di yira dini bavu gunia pe zan na"}],"reel107":[{"id":"122114312462500","description":"Reel 107, Track 01: Calabash songs"}],"reel108":[{"id":"1221143125328125","description":"Reel 108, Track 01: Calabash jongo"},{"id":"1221143126593750","description":"Reel 108, Track 02: Wui demonstration"},{"id":"1221143127609375","description":"Reel 108, Track 03: Test recording"}],"reel109":[{"id":"1221143128671875","description":"Reel 109, Track 01: Linle songs"}],"reel11":[{"id":"1221142447281250","description":"Reel 11, Track 01: Kasena vocal piece"}],"reel110":[{"id":"1221143132390625","description":"Reel 110, Track 01: Linle songs"}],"reel111":[{"id":"1221143133781250","description":"Reel 111, Track 01: Juntulla"},{"id":"1221143134781250","description":"Reel 111, Track 02: Juntulla"}],"reel112":[{"id":"1221143138203125","description":"Reel 112, Track 01: Juntulla"}],"reel113":[{"id":"1221143139578125","description":"Reel 113, Track 01: Duelinka"},{"id":"1221143140734375","description":"Reel 113, Track 02: Test recording"},{"id":"1221143141765625","description":"Reel 113, Track 03: Duelinka"},{"id":"1221143389531250","description":"Reel 113, Track 04: Gogta yilla"}],"reel114":[{"id":"1221143142906250","description":"Reel 114, Track 01: Gogta yilla"},{"id":"122114314462500","description":"Reel 114, Track 02: Nagila"},{"id":"1221143145171875","description":"Reel 114, Track 03: Wui demonstration"},{"id":"1221143146187500","description":"Reel 114, Track 04: Nagila"},{"id":"1221143147218750","description":"Reel 114, Track 05: Muru yeri yiila"}],"reel115":[{"id":"1221143148546875","description":"Reel 115, Track 01: Duelinka"},{"id":"1221143149578125","description":"Reel 115, Track 02: Gogta"},{"id":"1221143150718750","description":"Reel 115, Track 03: Nagila"},{"id":"1221143151765625","description":"Reel 115, Track 04: A pog laasa gog tu chaab"},{"id":"1221161800640625","description":"Reel 115, Track 05: Sakogsa"}],"reel116":[{"id":"1221143153750000","description":"Reel 116, Track 01: Navrongo wedding"},{"id":"1221143173515625","description":"Reel 116, Track 02: Navrongo wedding"},{"id":"1221143174843750","description":"Reel 116, Track 03: Navrongo wedding"}],"reel117":[{"id":"1221143176140625","description":"Reel 117, Track 01: Linle songs"},{"id":"1221143177312500","description":"Reel 117, Track 02: Kamana pe yello"},{"id":"1221143178359375","description":"Reel 117, Track 03: Wui demonstration"},{"id":"1221143179375000","description":"Reel 117, Track 04: Kamana pe yello"},{"id":"1221143180515625","description":"Reel 117, Track 05: Kawa baro ko ye ba"},{"id":"1221143181562500","description":"Reel 117, Track 06: Calabash jongo"}],"reel118":[{"id":"1221143182765625","description":"Reel 118, Track 01: Punu nagule"},{"id":"1221143183812500","description":"Reel 118, Track 02: Calabash jongo"}],"reel119":[{"id":"12211431850","description":"Reel 119, Track 01: Calabash jongo"},{"id":"1221143186156250","description":"Reel 119, Track 02: Calabash Jongo"}],"reel12":[{"id":"1221142449609375","description":"Reel 12, Track 01: Praise song"},{"id":"122114245146875","description":"Reel 12, Track 02: Katia ma ve yem"},{"id":"1221142453296875","description":"Reel 12, Track 03: Jongo"},{"id":"1221142454703125","description":"Reel 12, Track 04: Jongo"}],"reel120":[{"id":"1221143187250000","description":"Reel 120, Track 01: Sound test"},{"id":"1221143188250000","description":"Reel 120, Track 02: Adungwe n lanna na"},{"id":"1221143189265625","description":"Reel 120, Track 03: Kan yira na debam kane"},{"id":"1221143190312500","description":"Reel 120, Track 04: A kee a ni debam"},{"id":"1221143191453125","description":"Reel 120, Track 05: Nagila nung Kayoro siini ya ba"},{"id":"1221143192484375","description":"Reel 120, Track 06: Namuwura bam ba da we ne"},{"id":"1221143193500000","description":"Reel 120, Track 07: Nagila duri na"},{"id":"1221143194531250","description":"Reel 120, Track 08: Zindi chege dzua dim chu mum se de viiri"},{"id":"1221143195546875","description":"Reel 120, Track 09: Kamana pe yello"},{"id":"1221143197125000","description":"Reel 120, Track 10: Sara muru gwa ba na"},{"id":"1221143198171875","description":"Reel 120, Track 11: Sinyee pa a gonga nung"},{"id":"1221143199843750","description":"Reel 120, Track 12: Kawuri na san dzong lasinga en le bolone"},{"id":"1221143200953125","description":"Reel 120, Track 13: Dzong logo si nabona dzege tiira"},{"id":"1221143201984375","description":"Reel 120, Track 14: Azaba gwa ba nan wu mina ni"}],"reel121":[{"id":"1221143202968750","description":"Reel 121, Track 01: Nunonga"},{"id":"122114320431250","description":"Reel 121, Track 02: Nagila"},{"id":"122114320562500","description":"Reel 121, Track 03: Pe zara"},{"id":"122114320693750","description":"Reel 121, Track 04: Jongo"}],"reel122":[{"id":"1221143207156250","description":"Reel 122, Track 01: Wui demonstration"},{"id":"1221143208234375","description":"Reel 122, Track 02: Nagila nung Kayoro siini ya ba"},{"id":"1221143209234375","description":"Reel 122, Track 03: Kamana pe yello"},{"id":"1221143210234375","description":"Reel 122, Track 04: Sara muru gwa ba na"},{"id":"1221143211250000","description":"Reel 122, Track 05: Praise song"}],"reel123":[{"id":"1221143212343750","description":"Reel 123, Track 01: Interview with Wedia"}],"reel124":[{"id":"122114321593750","description":"Reel 124, Track 01: Interview with Wedia"}],"reel125":[{"id":"12211432180","description":"Reel 125, Track 01: Sound test"},{"id":"1221143218968750","description":"Reel 125, Track 02: Saboro yuu apewa bia ne leru"},{"id":"12211432200","description":"Reel 125, Track 03: Kuleri ni de"},{"id":"122114322131250","description":"Reel 125, Track 04: Kwara balinia bia ba baloro dzega"},{"id":"1221143222453125","description":"Reel 125, Track 05: Nagila nung Kayoro siini ya ba"},{"id":"1221143223484375","description":"Reel 125, Track 06: Bana vui baloro yi bada lara wube"},{"id":"1221143224500000","description":"Reel 125, Track 07: Kaba nia pe zuyara"}],"reel126":[{"id":"1221143225500000","description":"Reel 126, Track 01: Sabia wo see zuru ba da ba"},{"id":"1221143226546875","description":"Reel 126, Track 02: Ba n gwe sisenga"},{"id":"1221143227578125","description":"Reel 126, Track 03: Bawura ni wa di"},{"id":"1221143228609375","description":"Reel 126, Track 04: Sila mo sila mo wee"},{"id":"1221143229625000","description":"Reel 126, Track 05: Di lori yo patasi"},{"id":"1221143230781250","description":"Reel 126, Track 06: Atrii sono ni sa ne wia dzoono"},{"id":"1221143231828125","description":"Reel 126, Track 07: A dzem mua keeri kugwoo a vu"},{"id":"1221143232859375","description":"Reel 126, Track 08: Test recording"},{"id":"1221143233843750","description":"Reel 126, Track 09: Nagila nung Kayoro siini ya ba"},{"id":"1221143234859375","description":"Reel 126, Track 10: Ba n gwe sisena"},{"id":"1221143235890625","description":"Reel 126, Track 11: Sila mo sila mo wee"},{"id":"1221143236906250","description":"Reel 126, Track 12: De na ve lua kam di yira"}],"reel127":[{"id":"1221143237890625","description":"Reel 127, Track 01: Jongo"},{"id":"1221143238968750","description":"Reel 127, Track 02: Nunonga"},{"id":"122114324015625","description":"Reel 127, Track 03: Nagila"},{"id":"122114324146875","description":"Reel 127, Track 04: Pe zara"}],"reel128":[{"id":"122114324262500","description":"Reel 128, Track 01: Calabash praise song"},{"id":"1221143243890625","description":"Reel 128, Track 02: Calabash praise song"}],"reel129":[{"id":"122114324593750","description":"Reel 129, Track 01: Calabash praise song"},{"id":"1221143246406250","description":"Reel 129, Track 02: Calabash praise song"},{"id":"1221143247609375","description":"Reel 129, Track 03: Calabash praise song"},{"id":"1221143390578125","description":"Reel 129, Track 04: Calabash music"}],"reel13":[{"id":"1221142456125000","description":"Reel 13, Track 01: Manchali mulla"},{"id":"122114245831250","description":"Reel 13, Track 02: Gungwe demonstration"},{"id":"1221142459468750","description":"Reel 13, Track 03: Nagila nung Kayoro siini ya ba"},{"id":"1221142460906250","description":"Reel 13, Track 04: Gungwe demonstration"},{"id":"1221142462312500","description":"Reel 13, Track 05: Kori demonstration"},{"id":"1221142463718750","description":"Reel 13, Track 06: Pe zara"}],"reel130":[{"id":"1221143248562500","description":"Reel 130, Track 01: Jongo"},{"id":"1221143249562500","description":"Reel 130, Track 02: Jongo"}],"reel131":[{"id":"1221143250812500","description":"Reel 131, Track 01: Baro baro mo sana bam"},{"id":"1221143251843750","description":"Reel 131, Track 02: Anu billa kogga"},{"id":"1221143252890625","description":"Reel 131, Track 03: Bon kukula faga bia kana bona palla"},{"id":"1221143253968750","description":"Reel 131, Track 04: Bana ver ba bee Awaa bu"},{"id":"122114325578125","description":"Reel 131, Track 05: Chulla mo wari"},{"id":"122114325678125","description":"Reel 131, Track 06: Nma tin kwag kase kwag na nyoma"},{"id":"122114325793750","description":"Reel 131, Track 07: Wa da we na we"},{"id":"1221143258140625","description":"Reel 131, Track 08: Jan gwen tara de ba ni ba taam"},{"id":"1221143259171875","description":"Reel 131, Track 09: Nna ne kwio sem n pane"},{"id":"1221143260203125","description":"Reel 131, Track 10: Nnonno gog toos sambua timi"},{"id":"1221143261234375","description":"Reel 131, Track 11: Nnonno gog toos sambua timi"}],"reel132":[{"id":"1221143262265625","description":"Reel 132, Track 01: Kpanlogo"},{"id":"1221143263359375","description":"Reel 132, Track 02: Kpanlogo"},{"id":"1221143264531250","description":"Reel 132, Track 03: Monno"}],"reel133":[{"id":"1221143265593750","description":"Reel 133, Track 01: Monno"},{"id":"1221143266593750","description":"Reel 133, Track 02: Jongo"},{"id":"1221143267640625","description":"Reel 133, Track 03: Jongo"},{"id":"1221143268750000","description":"Reel 133, Track 04: Jongo"}],"reel134":[{"id":"1221143269796875","description":"Reel 134, Track 01: Jongo"},{"id":"1221143270859375","description":"Reel 134, Track 02: Jongo"},{"id":"1221143271953125","description":"Reel 134, Track 03: Jongo"}],"reel135":[{"id":"1221143273125000","description":"Reel 135, Track 01: Kete processional"},{"id":"1221143274156250","description":"Reel 135, Track 02: Kete"},{"id":"1221143275171875","description":"Reel 135, Track 03: Kete"},{"id":"1221143276187500","description":"Reel 135, Track 04: Kete"},{"id":"1221143277187500","description":"Reel 135, Track 05: Adampan"},{"id":"1221143278250000","description":"Reel 135, Track 06: Kete"},{"id":"1221143387453125","description":"Reel 135, Track 07: Kete"},{"id":"1221143279281250","description":"Reel 135, Track 08: Kete processional"},{"id":"1221143280265625","description":"Reel 135, Track 09: Nnwonkoro"},{"id":"1221143281421875","description":"Reel 135, Track 10: Nnwonkoro"},{"id":"1221143282390625","description":"Reel 135, Track 11: Nnwonkoro"}],"reel136":[{"id":"1221143283437500","description":"Reel 136, Track 01: Nnwonkoro"},{"id":"1221143284468750","description":"Reel 136, Track 02: Nnwonkoro titles"},{"id":"1221143285468750","description":"Reel 136, Track 03: Nnwonkoro"},{"id":"1221143286625000","description":"Reel 136, Track 04: Nnwonkoro titles"},{"id":"1221143287609375","description":"Reel 136, Track 05: Nnwonkoro"},{"id":"1221143288750000","description":"Reel 136, Track 06: Nnwonkoro titles"},{"id":"1221143289718750","description":"Reel 136, Track 07: Nnwonkoro"},{"id":"1221143290781250","description":"Reel 136, Track 08: Nnwonkoro titles"}],"reel137":[{"id":"1221143291750000","description":"Reel 137, Track 01: Wui demonstration"},{"id":"1221143292765625","description":"Reel 137, Track 02: Nagila yi pare"},{"id":"1221143293843750","description":"Reel 137, Track 03: Nagila yi pare"},{"id":"1221143294828125","description":"Reel 137, Track 04: Nagila nung Kayoro siini ya ba"},{"id":"1221143295859375","description":"Reel 137, Track 05: Pe zara"},{"id":"12211432970","description":"Reel 137, Track 06: Maanu"},{"id":"122114329815625","description":"Reel 137, Track 07: We chonna lenna"},{"id":"122114329978125","description":"Reel 137, Track 08: Baye nva bu juru pwa busankwia"},{"id":"122114330093750","description":"Reel 137, Track 09: Sara muru gwa ba na"},{"id":"122114330193750","description":"Reel 137, Track 10: Jongo"},{"id":"122114330278125","description":"Reel 137, Track 11: Jongo"},{"id":"122114330393750","description":"Reel 137, Track 12: Mafalli Mulla"}],"reel138":[{"id":"1221143304125000","description":"Reel 138, Track 01: Nagila"},{"id":"1221143305187500","description":"Reel 138, Track 02: Pe zara"},{"id":"1221143306218750","description":"Reel 138, Track 03: Mannu"},{"id":"1221143307234375","description":"Reel 138, Track 04: Walking rhythm"},{"id":"1221143308234375","description":"Reel 138, Track 05: Jongo"}],"reel139":[{"id":"1221143309265625","description":"Reel 139, Track 01: Nagila nung Kayoro siini ya ba"},{"id":"1221143310296875","description":"Reel 139, Track 02: Nagila yi pare"},{"id":"1221143311375000","description":"Reel 139, Track 03: Jongo"},{"id":"1221143312406250","description":"Reel 139, Track 04: Sara muru gwa ba na"},{"id":"1221143313453125","description":"Reel 139, Track 05: Jongo"}],"reel14":[{"id":"1221142465156250","description":"Reel 14, Track 01: Wui demonstration"},{"id":"1221142466562500","description":"Reel 14, Track 02: Nagila nung Kayoro siini ya ba"},{"id":"1221142467968750","description":"Reel 14, Track 03: Sara muru gwa ba na"},{"id":"1221142469437500","description":"Reel 14, Track 04: Sinye pa a gong nung"},{"id":"1221142470843750","description":"Reel 14, Track 05: Pe zara"},{"id":"1221142472250000","description":"Reel 14, Track 06: Kawuri sa n dzong lasenga"},{"id":"1221142473656250","description":"Reel 14, Track 07: Manchali mulla"},{"id":"122114247562500","description":"Reel 14, Track 08: Kera ke kasungu"},{"id":"1221142476468750","description":"Reel 14, Track 09: Tan gwea"},{"id":"1221142477875000","description":"Reel 14, Track 10: Tan kwea"},{"id":"1221142479281250","description":"Reel 14, Track 11: Azaba gwa bam"},{"id":"1221142480703125","description":"Reel 14, Track 12: Katia ma ve yem"}],"reel140":[{"id":"1221143314468750","description":"Reel 140, Track 01: Jongo"}],"reel141":[{"id":"1221143315703125","description":"Reel 141, Track 01: Choir music"},{"id":"1221143316781250","description":"Reel 141, Track 02: Choir music"},{"id":"1221143317828125","description":"Reel 141, Track 03: Choir music"},{"id":"1221143318875000","description":"Reel 141, Track 04: Choir music"},{"id":"1221143319937500","description":"Reel 141, Track 05: Choir music"},{"id":"1221143320968750","description":"Reel 141, Track 06: Signature tune"},{"id":"1221143321968750","description":"Reel 141, Track 07: Momma Akra"},{"id":"12211433230","description":"Reel 141, Track 08: Adiicanfo mo"},{"id":"122114332415625","description":"Reel 141, Track 09: Monio mo bo ase"},{"id":"122114332531250","description":"Reel 141, Track 10: Onantefo"},{"id":"122114332693750","description":"Reel 141, Track 11: Fine nele"}],"reel142":[{"id":"122114332746875","description":"Reel 142, Track 01: Fine nele"},{"id":"122114332815625","description":"Reel 142, Track 02: Choir music"},{"id":"122114332931250","description":"Reel 142, Track 03: Choir music"},{"id":"122114333093750","description":"Reel 142, Track 04: Choir music"},{"id":"1221143331171875","description":"Reel 142, Track 05: Choir music"},{"id":"1221143332218750","description":"Reel 142, Track 06: My Lord, I Dance in the Name of Thee"},{"id":"1221143333281250","description":"Reel 142, Track 07: Choir music"},{"id":"1221143334328125","description":"Reel 142, Track 08: Mon Kamfo no"},{"id":"1221143335359375","description":"Reel 142, Track 09: Ghana siica asaase"},{"id":"1221143336437500","description":"Reel 142, Track 10: Oyamuonwefo"},{"id":"1221143337453125","description":"Reel 142, Track 11: Hyiawu"},{"id":"1221143338500000","description":"Reel 142, Track 12: Onwini Adwo"},{"id":"1221143339531250","description":"Reel 142, Track 13: Mmre"}],"reel143":[{"id":"1221143340500000","description":"Reel 143, Track 01: Jongo songs"},{"id":"1221143343312500","description":"Reel 143, Track 02: Jongo songs"},{"id":"1221143344562500","description":"Reel 143, Track 03: Jongo songs"}],"reel144":[{"id":"1221143345593750","description":"Reel 144, Track 01: Jongo songs"},{"id":"1221143346625000","description":"Reel 144, Track 02: Jongo songs"}],"reel145":[{"id":"1221143388515625","description":"Reel 145, Track 01: Jongo test"},{"id":"1221143347843750","description":"Reel 145, Track 02: Jongo test"},{"id":"1221143348843750","description":"Reel 145, Track 03: Jongo"},{"id":"1221143349843750","description":"Reel 145, Track 04: Jongo"},{"id":"1221143350812500","description":"Reel 145, Track 05: Jongo"},{"id":"1221143351828125","description":"Reel 145, Track 06: Jongo"},{"id":"1221143352812500","description":"Reel 145, Track 07: Jongo"},{"id":"1221143353843750","description":"Reel 145, Track 08: Jongo"},{"id":"1221143354843750","description":"Reel 145, Track 09: Jongo"},{"id":"1221143363906250","description":"Reel 145, Track 1: Jongo test"},{"id":"1221143355843750","description":"Reel 145, Track 10: Jongo"},{"id":"1221143356875000","description":"Reel 145, Track 11: Jongo"},{"id":"1221143357890625","description":"Reel 145, Track 12: Jongo"},{"id":"1221143358906250","description":"Reel 145, Track 13: Jongo"},{"id":"1221143359875000","description":"Reel 145, Track 14: Jongo"},{"id":"1221143360906250","description":"Reel 145, Track 15: Jongo"},{"id":"1221143361890625","description":"Reel 145, Track 16: Jongo"},{"id":"1221143362890625","description":"Reel 145, Track 17: Jongo"}],"reel146":[{"id":"1221143364875000","description":"Reel 146, Track 01: Jongo songs"},{"id":"1221143365953125","description":"Reel 146, Track 02: Jongo songs"}],"reel148":[{"id":"1221143371890625","description":"Reel 148, Track 01: Interview with Gariba"},{"id":"122114337493750","description":"Reel 148, Track 02: Interview with Gariba"}],"reel15":[{"id":"1221142482109375","description":"Reel 15, Track 01: Wui demonstration"},{"id":"1221142483531250","description":"Reel 15, Track 02: Bawa"}],"reel16":[{"id":"122114248515625","description":"Reel 16, Track 01: Bawa"},{"id":"122114248862500","description":"Reel 16, Track 02: Bawa"}],"reel17":[{"id":"1221142489515625","description":"Reel 17, Track 01: Bawa"},{"id":"1221142490937500","description":"Reel 17, Track 02: Bawa"},{"id":"1221142492406250","description":"Reel 17, Track 03: Bawa"}],"reel18":[{"id":"1221142494562500","description":"Reel 18, Track 01: Brass band music"},{"id":"1221142495984375","description":"Reel 18, Track 02: Brass band music"},{"id":"1221142497390625","description":"Reel 18, Track 03: Brass band music"},{"id":"1221142498812500","description":"Reel 18, Track 04: Brass band music"},{"id":"1221142500250000","description":"Reel 18, Track 05: Brass band music"},{"id":"1221142501687500","description":"Reel 18, Track 06: Brass band music"}],"reel19":[{"id":"122114250393750","description":"Reel 19, Track 01: Brass band music"},{"id":"1221142504515625","description":"Reel 19, Track 02: Brass band music"},{"id":"1221142505937500","description":"Reel 19, Track 03: Brass band music"},{"id":"1221142507359375","description":"Reel 19, Track 04: Brass band music"}],"reel2":[{"id":"122114241162500","description":"Reel 2, Track 01: Xylophone demonstration"}],"reel20":[{"id":"1221142508796875","description":"Reel 20, Track 01: Brass band music"},{"id":"1221142510234375","description":"Reel 20, Track 02: Brass band music"},{"id":"1221142511687500","description":"Reel 20, Track 03: Brass band music"}],"reel21":[{"id":"1221142513125000","description":"Reel 21, Track 01: Di yi da di ni"},{"id":"1221142514593750","description":"Reel 21, Track 02: Venga drum demonstration"},{"id":"12211425160","description":"Reel 21, Track 03: Wo mo lagi nagila"},{"id":"1221142517437500","description":"Reel 21, Track 04: Pe zara"},{"id":"1221142518859375","description":"Reel 21, Track 05: Pe zara"},{"id":"1221142520296875","description":"Reel 21, Track 06: Kara tu wu ye"}],"reel22":[{"id":"1221142521718750","description":"Reel 22, Track 01: A nu kwe a yiwe na kan lanna"},{"id":"1221142523140625","description":"Reel 22, Track 02: Ghana kaana wura ba cho lora"},{"id":"1221142524578125","description":"Reel 22, Track 03: A lagi se nu"},{"id":"1221142525984375","description":"Reel 22, Track 04: Vuna bia we pea"},{"id":"1221142527390625","description":"Reel 22, Track 05: Kan na nungi yagga"},{"id":"1221142528812500","description":"Reel 22, Track 06: A kwo nakwe tan gwea"},{"id":"1221142530281250","description":"Reel 22, Track 07: Jongo"}],"reel23":[{"id":"1221142531718750","description":"Reel 23, Track 01: Funeral song"}],"reel24":[{"id":"1221142538734375","description":"Reel 24, Track 01: Conversation with Ayipaga"},{"id":"1221142540171875","description":"Reel 24, Track 02: Wui lesson"},{"id":"1221142541609375","description":"Reel 24, Track 03: Wui lesson"},{"id":"1221142543218750","description":"Reel 24, Track 04: Wui lesson"}],"reel25":[{"id":"1221142544875000","description":"Reel 25, Track 01: Kori lesson"},{"id":"1221142546390625","description":"Reel 25, Track 02: Interview with Ayipaga"},{"id":"1221142547921875","description":"Reel 25, Track 03: Wui lesson"},{"id":"1221142549578125","description":"Reel 25, Track 04: Wui demonstration"}],"reel26":[{"id":"1221142551140625","description":"Reel 26, Track 01: Jesu de o Mary"},{"id":"1221142552640625","description":"Reel 26, Track 02: Agula leeno"},{"id":"1221142554125000","description":"Reel 26, Track 03: Interview with Ayipaga"},{"id":"1221142555609375","description":"Reel 26, Track 04: Wui lesson"},{"id":"1221142557125000","description":"Reel 26, Track 05: Wui lesson"},{"id":"1221142558640625","description":"Reel 26, Track 06: Wui lesson"},{"id":"122114256078125","description":"Reel 26, Track 07: Interview with Ayipaga"},{"id":"1221142561562500","description":"Reel 26, Track 08: Interview with Ayipaga"}],"reel27":[{"id":"1221142563171875","description":"Reel 27, Track 01: Interview with Ayipaga"},{"id":"1221142564625000","description":"Reel 27, Track 02: Interview with Ayipaga"},{"id":"122114256678125","description":"Reel 27, Track 03: Interview with Ayipaga"},{"id":"1221142567718750","description":"Reel 27, Track 04: Interview with Ayipaga"},{"id":"1221142569312500","description":"Reel 27, Track 05: Interview with Ayipaga"},{"id":"1221142570812500","description":"Reel 27, Track 06: Interview with Ayipaga"},{"id":"1221142572265625","description":"Reel 27, Track 07: Interview with Ayipaga"},{"id":"1221142573718750","description":"Reel 27, Track 08: Interview with Ayipaga"}],"reel28":[{"id":"1221142575156250","description":"Reel 28, Track 01: Interview with Ayipaga"}],"reel29":[{"id":"1221142580343750","description":"Reel 29, Track 01: Wui lesson"},{"id":"122114258293750","description":"Reel 29, Track 02: Wui lesson"},{"id":"1221142583578125","description":"Reel 29, Track 03: Wui lesson"},{"id":"122114258515625","description":"Reel 29, Track 04: Wui lesson"},{"id":"1221142586468750","description":"Reel 29, Track 05: Wui lesson"},{"id":"1221142587968750","description":"Reel 29, Track 06: Wui lesson"},{"id":"1221142589421875","description":"Reel 29, Track 07: Wui lesson"}],"reel30":[{"id":"1221142590890625","description":"Reel 30, Track 01: Wui lesson"},{"id":"1221142592578125","description":"Reel 30, Track 02: Interview with Ayipaga"},{"id":"1221142595843750","description":"Reel 30, Track 03: Interview with Ayipaga"}],"reel31":[{"id":"1221142597437500","description":"Reel 31, Track 01: Interview with Ayipaga"},{"id":"1221142598937500","description":"Reel 31, Track 02: Interview with Ayipaga"},{"id":"1221142600437500","description":"Reel 31, Track 03: Interview with Ayipaga"},{"id":"1221142601890625","description":"Reel 31, Track 04: Interview with Ayipaga"},{"id":"1221142603359375","description":"Reel 31, Track 05: Interview with Ayipaga"},{"id":"1221142604859375","description":"Reel 31, Track 06: Interview with Ayipaga"},{"id":"1221142606453125","description":"Reel 31, Track 07: Interview with Ayipaga"}],"reel32":[{"id":"1221142607953125","description":"Reel 32, Track 01: Interview with Ayipaga"}],"reel33":[{"id":"1221142611187500","description":"Reel 33, Track 01: Old jongo songs"},{"id":"1221142612937500","description":"Reel 33, Track 02: New jongo songs"}],"reel35":[{"id":"1221142614671875","description":"Reel 35, Track 01: Jongo na kumi"},{"id":"1221142616171875","description":"Reel 35, Track 02: Whistles highlife song"},{"id":"1221142617656250","description":"Reel 35, Track 03: Buma pog Sariga"},{"id":"1221142619140625","description":"Reel 35, Track 04: Interview with Ayipaga"},{"id":"1221142620578125","description":"Reel 35, Track 05: Angkara fella"},{"id":"122114262278125","description":"Reel 35, Track 06: Old jongo song"},{"id":"1221142623546875","description":"Reel 35, Track 07: Anu ke belo so fi naane"},{"id":"122114262546875","description":"Reel 35, Track 08: Old jongo song"},{"id":"1221142626531250","description":"Reel 35, Track 09: Ajua mami kunununu"},{"id":"122114262831250","description":"Reel 35, Track 10: Buma pog Sariga"}],"reel36":[{"id":"1221142629468750","description":"Reel 36, Track 01: Old jongo song"},{"id":"1221142630968750","description":"Reel 36, Track 02: Highlife song for nagila"},{"id":"1221142632453125","description":"Reel 36, Track 03: Nagila tu on yande tua"},{"id":"1221142633937500","description":"Reel 36, Track 04: Nagila"},{"id":"1221142635406250","description":"Reel 36, Track 05: Old jongo song"},{"id":"1221142636890625","description":"Reel 36, Track 06: Asare yella ya lana"},{"id":"1221142638390625","description":"Reel 36, Track 07: A nyanaba sa ku go"},{"id":"1221143378687500","description":"Reel 36, Track 08: Anu jaana nasina bale"},{"id":"1221142639875000","description":"Reel 36, Track 09: Atia de Amo"}],"reel37":[{"id":"1221142641375000","description":"Reel 37, Track 01: Youth festival music"},{"id":"1221142642890625","description":"Reel 37, Track 02: Kpanlogo"},{"id":"1221142645234375","description":"Reel 37, Track 03: Kpanlogo"},{"id":"1221142646718750","description":"Reel 37, Track 04: Nnwonkoro"},{"id":"1221142648203125","description":"Reel 37, Track 05: Nnwonkoro"},{"id":"1221142649765625","description":"Reel 37, Track 06: Youth festival music"}],"reel38":[{"id":"1221142651203125","description":"Reel 38, Track 01: Youth festival music"},{"id":"1221142652765625","description":"Reel 38, Track 02: Ewe music"},{"id":"1221142654328125","description":"Reel 38, Track 03: Kpanlogo"},{"id":"1221142655890625","description":"Reel 38, Track 04: Youth festival music"}],"reel39":[{"id":"1221142657562500","description":"Reel 39, Track 01: Kasena music"},{"id":"122114265962500","description":"Reel 39, Track 02: Youth festival music"},{"id":"1221142660515625","description":"Reel 39, Track 03: Bawa"}],"reel4":[{"id":"1221142412796875","description":"Reel 4, Track 01: Agbadza"},{"id":"1221142413796875","description":"Reel 4, Track 02: Parade music"}],"reel40":[{"id":"1221142662125000","description":"Reel 40, Track 01: Youth festival music"},{"id":"1221142663765625","description":"Reel 40, Track 02: Sikyi"},{"id":"1221142665234375","description":"Reel 40, Track 03: Sikyi"},{"id":"1221142666812500","description":"Reel 40, Track 04: Nagila"}],"reel41":[{"id":"1221142668406250","description":"Reel 41, Track 01: Adowa"},{"id":"1221142669921875","description":"Reel 41, Track 02: Kete"},{"id":"1221142671562500","description":"Reel 41, Track 03: Youth festival music"},{"id":"1221142673140625","description":"Reel 41, Track 04: Afro-American music at festival"},{"id":"1221142674625000","description":"Reel 41, Track 05: Youth festival music"}],"reel42":[{"id":"1221142676140625","description":"Reel 42, Track 01: Youth festival music"},{"id":"1221143379703125","description":"Reel 42, Track 01: National Youth Arts Festival stage performance"},{"id":"1221142677750000","description":"Reel 42, Track 02: Adowa"},{"id":"1221143380875000","description":"Reel 42, Track 02: Adowa"},{"id":"1221142679234375","description":"Reel 42, Track 03: Kpanlogo"},{"id":"1221143381953125","description":"Reel 42, Track 03: Kpanlogo"},{"id":"1221142680734375","description":"Reel 42, Track 04: Gahu"},{"id":"12211433830","description":"Reel 42, Track 04: Gahu"},{"id":"1221142682234375","description":"Reel 42, Track 05: Youth festival music"},{"id":"122114338478125","description":"Reel 42, Track 05: National Youth Arts Festival stage performance"}],"reel43":[{"id":"1221142683781250","description":"Reel 43, Track 01: Speech by Navropio"},{"id":"1221142685265625","description":"Reel 43, Track 02: Apatampa"},{"id":"1221142686875000","description":"Reel 43, Track 03: Xylophone music"},{"id":"1221142688437500","description":"Reel 43, Track 04: Adewu"}],"reel44":[{"id":"1221142690109375","description":"Reel 44, Track 01: Kpanlogo"},{"id":"1221142691656250","description":"Reel 44, Track 02: Youth festival music"},{"id":"1221142693250000","description":"Reel 44, Track 03: Ogyego"},{"id":"1221142695343750","description":"Reel 44, Track 04: Youth festival music"}],"reel45":[{"id":"1221142696984375","description":"Reel 45, Track 01: Youth festival music"},{"id":"1221142698703125","description":"Reel 45, Track 02: Gingaga"},{"id":"1221142700625000","description":"Reel 45, Track 03: Youth festival music"}],"reel46":[{"id":"1221142703421875","description":"Reel 46, Track 01: Festival choir music"},{"id":"1221142706812500","description":"Reel 46, Track 02: Festival choir music"}],"reel47":[{"id":"1221142709359375","description":"Reel 47, Track 01: Festival choir music"},{"id":"122114271131250","description":"Reel 47, Track 02: Festival choir music"},{"id":"1221142712671875","description":"Reel 47, Track 03: Festival choir music"}],"reel48":[{"id":"1221142714296875","description":"Reel 48, Track 01: Festival choir music"},{"id":"1221142715796875","description":"Reel 48, Track 02: Festival choir music"},{"id":"1221142717234375","description":"Reel 48, Track 03: Festival choir music"},{"id":"1221142718859375","description":"Reel 48, Track 04: Festival choir music"}],"reel49":[{"id":"1221142720578125","description":"Reel 49, Track 01: Festival choir music"},{"id":"1221142722156250","description":"Reel 49, Track 02: Festival choir music"},{"id":"1221142723796875","description":"Reel 49, Track 03: Festival choir music"}],"reel5":[{"id":"122114241593750","description":"Reel 5, Track 01: Jongo"},{"id":"1221142417515625","description":"Reel 5, Track 02: Jongo"}],"reel50":[{"id":"1221142725515625","description":"Reel 50, Track 01: Festival choir music"},{"id":"122114272715625","description":"Reel 50, Track 02: Festival choir music"},{"id":"1221142729359375","description":"Reel 50, Track 03: Festival choir music"}],"reel51":[{"id":"122114273146875","description":"Reel 51, Track 01: Kpanlogo"},{"id":"1221142732625000","description":"Reel 51, Track 02: Bawa"}],"reel52":[{"id":"1221142734281250","description":"Reel 52, Track 01: Music at a catholic mass"}],"reel53":[{"id":"1221142740984375","description":"Reel 53, Track 01: Music at a mass"}],"reel54":[{"id":"1221142742750000","description":"Reel 54, Track 01: Wui demonstration"},{"id":"1221142744734375","description":"Reel 54, Track 02: Jongo song"},{"id":"1221142746250000","description":"Reel 54, Track 03: Jongo song"},{"id":"1221142747781250","description":"Reel 54, Track 04: Jongo song"},{"id":"1221142749312500","description":"Reel 54, Track 05: Jongo song"},{"id":"122114275162500","description":"Reel 54, Track 06: Jongo song"},{"id":"1221142752640625","description":"Reel 54, Track 07: Sa jon lasena n le boloni"},{"id":"1221142754171875","description":"Reel 54, Track 08: Atia Abadu"},{"id":"1221142755687500","description":"Reel 54, Track 09: Nia wa gu Asaletu"}],"reel55":[{"id":"1221142757187500","description":"Reel 55, Track 01: Interview with artist"},{"id":"1221142758656250","description":"Reel 55, Track 02: Interview with Ayipaga"},{"id":"1221142760250000","description":"Reel 55, Track 03: Interview with Ayipaga"},{"id":"1221142763875000","description":"Reel 55, Track 04: Interview with Ayipaga"},{"id":"1221142766203125","description":"Reel 55, Track 05: Interview with Ayipaga"},{"id":"1221142767875000","description":"Reel 55, Track 06: Interview with Ayipaga"}],"reel56":[{"id":"1221142769375000","description":"Reel 56, Track 01: Kamina bara wu gaa ke sa ba"},{"id":"1221142770875000","description":"Reel 56, Track 02: Badem n na yina"},{"id":"1221142772468750","description":"Reel 56, Track 03: Bana chin lere chin leena"},{"id":"122114277431250","description":"Reel 56, Track 04: Kampalla anu yire yo kampalla"},{"id":"1221142775593750","description":"Reel 56, Track 05: Tum karani ni"},{"id":"1221142777125000","description":"Reel 56, Track 06: Den tika lin sawari yaa"},{"id":"1221142778671875","description":"Reel 56, Track 07: De laga de vo"}],"reel57":[{"id":"1221142780156250","description":"Reel 57, Track 01: Yongo tuning song"},{"id":"1221142781625000","description":"Reel 57, Track 02: Ziyolume"},{"id":"122114278393750","description":"Reel 57, Track 03: Mirigu Demalum"},{"id":"1221142784609375","description":"Reel 57, Track 04: Zoolo ba yakuya"},{"id":"1221142786109375","description":"Reel 57, Track 05: Ba naam goom"},{"id":"1221142787687500","description":"Reel 57, Track 06: Asama yee kale nyogna noosi"},{"id":"1221142789234375","description":"Reel 57, Track 07: Ya goya vole"},{"id":"1221142790765625","description":"Reel 57, Track 08: Akumware yoo"}],"reel58":[{"id":"1221142792312500","description":"Reel 58, Track 01: Mass at St. Cecilia's"}],"reel59":[{"id":"1221142797281250","description":"Reel 59, Track 01: Mass at St. Cecilia's"}],"reel6":[{"id":"1221142418968750","description":"Reel 6, Track 01: Jongo"},{"id":"1221142420453125","description":"Reel 6, Track 02: Jongo"},{"id":"1221142421890625","description":"Reel 6, Track 03: Jongo"}],"reel60":[{"id":"1221142798906250","description":"Reel 60, Track 01: Interview with Ayipaga"},{"id":"1221142800375000","description":"Reel 60, Track 02: Interview with Ayipaga"},{"id":"1221142802125000","description":"Reel 60, Track 03: Interview with Ayipaga"},{"id":"1221142803828125","description":"Reel 60, Track 04: Interview with Ayipaga"}],"reel61":[{"id":"1221142805375000","description":"Reel 61, Track 01: Dua magi kayi"},{"id":"1221142806843750","description":"Reel 61, Track 02: Zan de-vu atinia"},{"id":"1221142808359375","description":"Reel 61, Track 03: De tu luaka"},{"id":"1221142809812500","description":"Reel 61, Track 04: Aseju digi se na ba non"},{"id":"1221142811328125","description":"Reel 61, Track 05: Bana digi nyono"},{"id":"1221142812765625","description":"Reel 61, Track 06: Passa yi due"},{"id":"1221142814218750","description":"Reel 61, Track 07: Saboro yuu apewa bia ne leru"},{"id":"1221142815703125","description":"Reel 61, Track 08: Kuleri ni de o nubia gu padono"},{"id":"1221142817187500","description":"Reel 61, Track 09: Asi dza n nagila yasm dzam ba"},{"id":"1221142818734375","description":"Reel 61, Track 10: Nagila nung Kayoro ya ba"},{"id":"1221142820234375","description":"Reel 61, Track 11: Sa n yidori"},{"id":"1221142821750000","description":"Reel 61, Track 12: Kaba nia pe zuyara"}],"reel62":[{"id":"1221142823218750","description":"Reel 62, Track 01: Salnia ba se"},{"id":"1221142824828125","description":"Reel 62, Track 02: Wanbia achogibia bam"},{"id":"1221142826421875","description":"Reel 62, Track 03: Bawura ni wa di"}],"reel63":[{"id":"1221142829171875","description":"Reel 63, Track 01: A ne ba donga bara"},{"id":"1221142830671875","description":"Reel 63, Track 02: Jongo Songs - VIII"}],"reel64":[{"id":"1221142835796875","description":"Reel 64, Track 01: Di lori yo patasi"},{"id":"1221142837296875","description":"Reel 64, Track 02: Sinye pa gona"},{"id":"122114283931250","description":"Reel 64, Track 03: Dua magi kazem kukoro"}],"reel66":[{"id":"1221142840765625","description":"Reel 66, Track 01: Bawura ni wa di"},{"id":"1221142842312500","description":"Reel 66, Track 02: Bawura ni wa di"},{"id":"1221142843812500","description":"Reel 66, Track 03: Ba n gwe siseya"},{"id":"1221142845312500","description":"Reel 66, Track 04: Siira Alo"},{"id":"1221142846828125","description":"Reel 66, Track 05: Dzon moni nayina dzon tsogi"},{"id":"1221142848312500","description":"Reel 66, Track 06: Nabom wura pe tiga"},{"id":"1221142849843750","description":"Reel 66, Track 07: Kabon na saga"},{"id":"1221142851328125","description":"Reel 66, Track 08: Jongo song"},{"id":"1221142852812500","description":"Reel 66, Track 09: Jongo song"},{"id":"1221142854343750","description":"Reel 66, Track 10: Jongo song"}],"reel67":[{"id":"1221142855921875","description":"Reel 67, Track 01: Test recording"},{"id":"1221142857375000","description":"Reel 67, Track 02: Nunonga"},{"id":"1221143391640625","description":"Reel 67, Track 03: Gwea"},{"id":"1221142858937500","description":"Reel 67, Track 04: Pe zara"},{"id":"1221142860515625","description":"Reel 67, Track 05: Nagila"},{"id":"122114286278125","description":"Reel 67, Track 06: Niguri"}],"reel68":[{"id":"1221142863734375","description":"Reel 68, Track 01: Jongo"},{"id":"1221142865265625","description":"Reel 68, Track 02: Jongo warm-up"},{"id":"1221142866781250","description":"Reel 68, Track 03: Jongo warm-up"},{"id":"1221142868296875","description":"Reel 68, Track 04: Jongo warm-up"}],"reel69":[{"id":"1221142869796875","description":"Reel 69, Track 01: Pe zara"},{"id":"1221142871296875","description":"Reel 69, Track 02: Bawuri ni wa di"},{"id":"1221142872765625","description":"Reel 69, Track 03: Gunggolo to tiga"},{"id":"1221142874218750","description":"Reel 69, Track 04: Dua magi"},{"id":"1221142875671875","description":"Reel 69, Track 05: Di lori"},{"id":"1221143385390625","description":"Reel 69, Track 05: Di lori"},{"id":"1221142877125000","description":"Reel 69, Track 06: Su ni songo"},{"id":"1221142878640625","description":"Reel 69, Track 07: A sinye pa gonga"},{"id":"1221142880109375","description":"Reel 69, Track 08: Dibam nu kada"},{"id":"1221142881609375","description":"Reel 69, Track 09: Sa we ni"},{"id":"122114288378125","description":"Reel 69, Track 10: Ba n gwe sisenga"},{"id":"1221142884640625","description":"Reel 69, Track 11: Sa n dzong sisenga"},{"id":"1221142886109375","description":"Reel 69, Track 12: Sua yam dora"},{"id":"1221142887578125","description":"Reel 69, Track 13: Pindana"},{"id":"122114288946875","description":"Reel 69, Track 14: Siira Alo"},{"id":"1221142890515625","description":"Reel 69, Track 15: Bolo bolo"},{"id":"12211428920","description":"Reel 69, Track 16: Wonbia Achogibia"}],"reel7":[{"id":"1221142423406250","description":"Reel 7, Track 01: Kamana pe yello (and) Sinye pa a gong nung"},{"id":"1221142424906250","description":"Reel 7, Track 02: Kamana pe yello (and) Sinye pa a gong nung"},{"id":"1221142426328125","description":"Reel 7, Track 03: Praise song"},{"id":"1221142427796875","description":"Reel 7, Track 04: Wui tunes"}],"reel70":[{"id":"1221142893484375","description":"Reel 70, Track 01: A nu to tiga na"},{"id":"1222098666890625","description":"Reel 70, Track 02: Jongo Song"},{"id":"1222098672437500","description":"Reel 70, Track 03: Jongo Song"},{"id":"1222098673593750","description":"Reel 70, Track 04: Jongo Song"},{"id":"1222098674921875","description":"Reel 70, Track 05: Jongo Song"},{"id":"1222098676125000","description":"Reel 70, Track 06: Jongo Song"},{"id":"1222098677296875","description":"Reel 70, Track 07: Discussion on flute in jongo songs"},{"id":"1222098668562500","description":"Reel 70, Track 08: Pe Zara Song"},{"id":"1222098678609375","description":"Reel 70, Track 09: Pe Zara Song"},{"id":"1222098678609375","description":"Reel 70, Track 10: Pe Zara Song"},{"id":"1222098679921875","description":"Reel 70, Track 11: Nagila Song"},{"id":"1222098682312500","description":"Reel 70, Track 12: Nagila Song"},{"id":"1222098670968750","description":"Reel 70, Track 13: Gwea Song"},{"id":"122209868146875","description":"Reel 70, Track 14: Gwea Song"}],"reel71":[{"id":"1221142894937500","description":"Reel 71, Track 01: Dance session"}],"reel72":[{"id":"122114289893750","description":"Reel 72, Track 01: Dance session"},{"id":"1221142899656250","description":"Reel 72, Track 02: Dance session"},{"id":"1221142901109375","description":"Reel 72, Track 03: Dance session"},{"id":"1221142902578125","description":"Reel 72, Track 04: Dance session"},{"id":"122114290431250","description":"Reel 72, Track 05: Dance session"},{"id":"1221142905484375","description":"Reel 72, Track 06: Dance session"},{"id":"1221142906937500","description":"Reel 72, Track 07: Dance session"}],"reel73":[{"id":"1221142908406250","description":"Reel 73, Track 01: Adenkum"},{"id":"1221142909921875","description":"Reel 73, Track 02: Adenkum"},{"id":"1221142911437500","description":"Reel 73, Track 03: Adenkum"},{"id":"1221142912968750","description":"Reel 73, Track 04: Adenkum"},{"id":"1221142914484375","description":"Reel 73, Track 05: Adenkum"},{"id":"12211429160","description":"Reel 73, Track 06: Ompe"}],"reel74":[{"id":"1221142917671875","description":"Reel 74, Track 01: Ompe"},{"id":"1221142919156250","description":"Reel 74, Track 02: Ompe"},{"id":"1221142921156250","description":"Reel 74, Track 03: Libation song"},{"id":"1221142922703125","description":"Reel 74, Track 04: Palmwine music"},{"id":"1221142924250000","description":"Reel 74, Track 05: Adowa"},{"id":"1221142925796875","description":"Reel 74, Track 06: Palmwine"}],"reel75":[{"id":"1221142927265625","description":"Reel 75, Track 01: Palmwine music"},{"id":"1221142928687500","description":"Reel 75, Track 02: Palmwine music"},{"id":"1221142930250000","description":"Reel 75, Track 03: Bamboo Rhythm"},{"id":"1221142931750000","description":"Reel 75, Track 04: Kete"},{"id":"1221142933265625","description":"Reel 75, Track 05: Xylophone music"},{"id":"1221142935109375","description":"Reel 75, Track 06: Xylophone music"},{"id":"1221142936593750","description":"Reel 75, Track 07: Xylophone music"},{"id":"122114293893750","description":"Reel 75, Track 08: Xylophone music"},{"id":"1221142939609375","description":"Reel 75, Track 09: Xylophone music"},{"id":"1221142941171875","description":"Reel 75, Track 10: Kakraba Lobi and ensemble"},{"id":"1221142942640625","description":"Reel 75, Track 11: Apatampa"}],"reel76":[{"id":"1221142944187500","description":"Reel 76, Track 01: Apatampa"},{"id":"1221142945671875","description":"Reel 76, Track 02: Apatampa"},{"id":"1221142947140625","description":"Reel 76, Track 03: Adenkum"}],"reel77":[{"id":"1221142948718750","description":"Reel 77, Track 01: Gadzo"},{"id":"122114295246875","description":"Reel 77, Track 02: Nagila"},{"id":"1221142953734375","description":"Reel 77, Track 03: Paga flute and drum music"},{"id":"1221142955250000","description":"Reel 77, Track 04: Jongo"}],"reel78":[{"id":"1221142956734375","description":"Reel 78, Track 01: Jongo"},{"id":"1221142958203125","description":"Reel 78, Track 02: Folkloric music"},{"id":"1221142959718750","description":"Reel 78, Track 03: Folkloric music"},{"id":"1221142961203125","description":"Reel 78, Track 04: Folkloric music"},{"id":"1221142962718750","description":"Reel 78, Track 05: Folkloric music"},{"id":"1221142964265625","description":"Reel 78, Track 06: Folkloric music"},{"id":"1221142965796875","description":"Reel 78, Track 07: Folkloric music"},{"id":"1221142967265625","description":"Reel 78, Track 08: Festival music"},{"id":"1221142968812500","description":"Reel 78, Track 09: Festival music"},{"id":"1221142970281250","description":"Reel 78, Track 10: Festival music"},{"id":"1221142971796875","description":"Reel 78, Track 11: Festival music"}],"reel79":[{"id":"1221142973234375","description":"Reel 79, Track 01: Festival music"},{"id":"1221142974781250","description":"Reel 79, Track 02: Festival music"},{"id":"1221142976343750","description":"Reel 79, Track 03: Festival music"}],"reel80":[{"id":"1221142977796875","description":"Reel 80, Track 01: Klama"},{"id":"1221142979421875","description":"Reel 80, Track 02: Agbadza"},{"id":"1221142980953125","description":"Reel 80, Track 03: Festival music"},{"id":"1221142982484375","description":"Reel 80, Track 04: Festival music"},{"id":"12211429840","description":"Reel 80, Track 05: Jongo"}],"reel81":[{"id":"1221142985531250","description":"Reel 81, Track 01: Atsiagbekor"},{"id":"1221142988203125","description":"Reel 81, Track 02: Agbadza"},{"id":"1221142989765625","description":"Reel 81, Track 03: Kete"},{"id":"1221142991281250","description":"Reel 81, Track 04: Xylophone Music"}],"reel82":[{"id":"1221142992765625","description":"Reel 82, Track 01: Dagomba Dance"},{"id":"1221142995500000","description":"Reel 82, Track 02: Fontomfrom"},{"id":"1221142996953125","description":"Reel 82, Track 03: Gahu"},{"id":"1221142998500000","description":"Reel 82, Track 04: Fanti music"},{"id":"1221143000171875","description":"Reel 82, Track 05: Bamaya"}],"reel83":[{"id":"1221143001703125","description":"Reel 83, Track 01: Bamaya"},{"id":"1221143003171875","description":"Reel 83, Track 02: Adowa"},{"id":"1221143004765625","description":"Reel 83, Track 03: Adowa"},{"id":"1221143006265625","description":"Reel 83, Track 04: Adzogbo"},{"id":"1221143007796875","description":"Reel 83, Track 05: Bobobo"},{"id":"1221143010546875","description":"Reel 83, Track 06: Sikyi"}],"reel84":[{"id":"122114301262500","description":"Reel 84, Track 01: Brass band music"},{"id":"1221143013593750","description":"Reel 84, Track 02: Brass band music"},{"id":"1221143015125000","description":"Reel 84, Track 03: Brass band music"}],"reel85":[{"id":"1221143016906250","description":"Reel 85, Track 01: Pe zara"},{"id":"1221143018984375","description":"Reel 85, Track 02: Nagila song"},{"id":"1221143020484375","description":"Reel 85, Track 03: Hausa music"},{"id":"122114302293750","description":"Reel 85, Track 04: Dua ma kaye"},{"id":"1221143024218750","description":"Reel 85, Track 05: Gulna"},{"id":"1221143025312500","description":"Reel 85, Track 06: Jongo song"},{"id":"1221143026687500","description":"Reel 85, Track 07: Jongo song"},{"id":"1221143028828125","description":"Reel 85, Track 08: Jongo song"},{"id":"1221143029859375","description":"Reel 85, Track 09: Jongo song"}],"reel86":[{"id":"1221143030875000","description":"Reel 86, Track 01: Wedding music"},{"id":"122114303215625","description":"Reel 86, Track 02: Wedding music"},{"id":"1221143033359375","description":"Reel 86, Track 03: Wedding music"}],"reel87":[{"id":"1221143034515625","description":"Reel 87, Track 01: Christmas mass"},{"id":"1221143035703125","description":"Reel 87, Track 02: Christmas mass"},{"id":"1221143036734375","description":"Reel 87, Track 03: Christmas mass"},{"id":"1221143037718750","description":"Reel 87, Track 04: Christmas mass"},{"id":"1221143038718750","description":"Reel 87, Track 05: Christmas Mass-V"},{"id":"1221143039687500","description":"Reel 87, Track 06: Christmas mass"},{"id":"1221143040859375","description":"Reel 87, Track 07: Christmas mass"},{"id":"1221143042343750","description":"Reel 87, Track 08: Christmas mass"},{"id":"1221143043312500","description":"Reel 87, Track 09: Christmas mass"},{"id":"1221143044328125","description":"Reel 87, Track 10: Christmas mass"}],"reel88":[{"id":"1221143045375000","description":"Reel 88, Track 01: Christmas mass"},{"id":"1221143046375000","description":"Reel 88, Track 02: Christmas mass"},{"id":"1221143047406250","description":"Reel 88, Track 03: Christmas mass"},{"id":"1221143048437500","description":"Reel 88, Track 05: Christmas mass"},{"id":"1221143049437500","description":"Reel 88, Track 05: Christmas mass"}],"reel89":[{"id":"1221143050437500","description":"Reel 89, Track 01: Praise singing"},{"id":"1221143051500000","description":"Reel 89, Track 02: Praise singing"},{"id":"1221143052734375","description":"Reel 89, Track 03: Jongo"}],"reel9":[{"id":"1221142429234375","description":"Reel 9, Track 01: Wui demonstration"},{"id":"1221142430640625","description":"Reel 9, Track 02: Azaba gwa bam"},{"id":"122114243262500","description":"Reel 9, Track 03: Wui demonstration"},{"id":"1221142433468750","description":"Reel 9, Track 04: Sara muru gwa ba na"},{"id":"1221142434890625","description":"Reel 9, Track 05: Nagila nung Kayoro siini ya ba"},{"id":"1221142436312500","description":"Reel 9, Track 06: Pe zara"},{"id":"1221142437734375","description":"Reel 9, Track 07: Kamana pe yello"},{"id":"1221142439140625","description":"Reel 9, Track 08: Azaba gwa bam"},{"id":"1221142440578125","description":"Reel 9, Track 09: Sara muru gwa ba na"}],"reel90":[{"id":"1221143053875000","description":"Reel 90, Track 01: Guem"},{"id":"1221143054937500","description":"Reel 90, Track 02: Market music"},{"id":"122114305646875","description":"Reel 90, Track 03: Market music"}],"reel91":[{"id":"122114305793750","description":"Reel 91, Track 01: Test recording"},{"id":"122114305862500","description":"Reel 91, Track 02: Test recording"},{"id":"122114305962500","description":"Reel 91, Track 03: Guem demonstration"},{"id":"1221143060156250","description":"Reel 91, Track 04: Nagila demonstration"},{"id":"1221143061328125","description":"Reel 91, Track 05: Pe zara demonstration"},{"id":"1221143062468750","description":"Reel 91, Track 06: Jongo demonstration"}],"reel92":[{"id":"1221143063812500","description":"Reel 92, Track 01: Walking rhythm demonstration"},{"id":"122114306562500","description":"Reel 92, Track 02: Jongo Songs"}],"reel93":[{"id":"1221143066421875","description":"Reel 93, Track 01: Kono music"},{"id":"1221143067531250","description":"Reel 93, Track 02: Kono music"},{"id":"1221143068546875","description":"Reel 93, Track 03: Kono music"},{"id":"1221143069546875","description":"Reel 93, Track 04: Kono music"},{"id":"1221143070515625","description":"Reel 93, Track 05: Kono music"}],"reel94":[{"id":"1221143071531250","description":"Reel 94, Track 01: Kasena praise singing"}],"reel95":[{"id":"1221143073750000","description":"Reel 95, Track 01: Kasena praise singing"},{"id":"122114307531250","description":"Reel 95, Track 02: Nagila yo yanyee"},{"id":"1221143076718750","description":"Reel 95, Track 03: Kabania pe zara"}],"reel96":[{"id":"1221143077828125","description":"Reel 96, Track 01: Jongo songs"}],"reel97":[{"id":"1221143080921875","description":"Reel 97, Track 01: Fana nagila sarabam tua"},{"id":"122114308262500","description":"Reel 97, Track 02: Nagila gono"}],"reel98":[{"id":"1221143083312500","description":"Reel 98, Track 01: Jongo"},{"id":"1221143084312500","description":"Reel 98, Track 02: Len sia"}],"reel99":[{"id":"1221143085609375","description":"Reel 99, Track 01: Kasena music"},{"id":"1221143086765625","description":"Reel 99, Track 02: Praise singing"},{"id":"1221143087906250","description":"Reel 99, Track 03: Kambana zu wagala"},{"id":"1221143088937500","description":"Reel 99, Track 04: Mafalli mulla"},{"id":"1221143089984375","description":"Reel 99, Track 05: Sinye pa a gona nun"}]},"gallery":[{"alt":"James Koetting recording in Ghana","src":"http://library.brown.edu/cds/jpegs/1222098557640625.jpg","caption":"James Koetting"},{"alt":"Kwasi Badu playing Kete master drum (side view)","src":"http://library.brown.edu/cds/jpegs/1221136860609375.jpg","caption":"Kwasi Badu playing Kete master drum (side view)"},{"alt":"Kwasi Badu playing apentemma (open stroke)","src":"http://library.brown.edu//cds/jpegs/1221136834171875.jpg","caption":"Kwasi Badu playing apentemma (open stroke)"},{"alt":"Kwasi Badu playing Kete master drum (front view)","src":"http://library.brown.edu/cds/jpegs/1221136848390625.jpg","caption":"Kwasi Badu playing Kete master drum (front view)"},{"alt":"Kwasi Badu with apentemma","src":"http://library.brown.edu/cds/jpegs/1221136807921875.jpg","caption":"Kwasi Badu with apentemma"},{"alt":"Kwasi Badu playing apentemma (damp stroke)","src":"http://library.brown.edu/cds/jpegs/1221136820593750.jpg","caption":"Kwasi Badu playing apentemma (damp stroke)"},{"alt":"Kwasi Badu playing female aburukuwa","src":"http://library.brown.edu/cds/jpegs/1221136785109375.jpg","caption":"Kwasi Badu playing female aburukuwa"},{"alt":"Kwasi Badu playing male aburukuwa","src":"http://library.brown.edu/cds/jpegs/1221136795859375.jpg","caption":"Kwasi Badu playing male aburukuwa"},{"alt":"Kwasi Badu with torowa","src":"http://library.brown.edu/cds/jpegs/122113675615625.jpg","caption":"Kwasi Badu with torowa"},{"alt":"Kwasi Badu with donno","src":"http://library.brown.edu/cds/jpegs/12211367700.jpg","caption":"Kwasi Badu with donno"},{"alt":"Kwasi Badu with dawuro (side view)","src":"http://library.brown.edu/cds/jpegs/1221136608375000.jpg","caption":"Kwasi Badu with dawuro (side view)"},{"alt":"Kwasi Badu with dawuro (front view)","src":"http://library.brown.edu/cds/jpegs/1221136685765625.jpg","caption":"Kwasi Badu with dawuro (front view)"},{"alt":"Kwasi Badu","src":"http://library.brown.edu/cds/jpegs/1221136534875000.jpg","caption":"Kwasi Badu"}],"notebooks":{"project_log":{"title":"Project log, Institute of African Studies, University of Ghana, Legon","id":"1205789773921875","inserts":[{"title":"Check list for T61-64","id":"1220642219906250"},{"title":"General practicals in Hausa language","id":"1220642372687500"},{"title":"If it's culture, let us taste it!","id":"1220642271359375"},{"title":"Interview with Alban","id":"1220642028875000"},{"title":"Invitation to a wedding celebration","id":"1220642066937500"},{"title":"Kayaro/Nima group","id":"1220641880734375"},{"title":"List for orthography and/or definition","id":"1220641921437500"},{"title":"List of items recorded for tape 34 and additional notes","id":"1220642092156250"},{"title":"Notes and expense list","id":"1220642412281250"},{"title":"Outline for introduction","id":"1220642422875000"},{"title":"Pa\u014ba group interview","id":"12206424340"},{"title":"Question list and November budget","id":"1220642045921875"},{"title":"R. log notes for 8/17/75, Nima","id":"1220642356671875"},{"title":"Review ban on drumming--Artiste","id":"1220641857296875"},{"title":"The third annual festival of arts","id":"1220641978140625"},{"title":"University of Ghana, Silver Jubilee Anniversary Celebrations, Legon Festival of Arts programme","id":"1220642108171875"},{"title":"Uproar over drumming ban","id":"1220641863890625"}]},"recording_log_1973":{"title":"Recording log 1973-75, Institute of African Studies, Legon, Ghana","id":"120578818678125","inserts":[{"title":"1st National Youth Festival of Arts, Koforidua programme","id":"1205790579609375"},{"title":"Choral music from the regions","id":"1205790551906250"},{"title":"Daily graphic newspaper subscription form","id":"1205790528468750"},{"title":"Expenses list; Nima","id":"1205790536546875"},{"title":"List of reminders and questions","id":"1205790559593750"},{"title":"Research expenses","id":"1205790601781250"},{"title":"Research expenses (2)","id":"122064196115625"}]},"recording_log_1975":{"title":"Recording log 1975, Institute of African Studies, Legon, Ghana","id":"1205789474781250","inserts":[{"title":"Alban transcriptions and questions","id":"1205790487265625"},{"title":"Night of choral music","id":"1205790479375000"}]}}};
+
+// === NAVIGATION ===
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#main-nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector(`#main-nav a[href="#${id}"]`).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// === RECORDINGS ===
+function initRecordings() {
+  const sel = document.getElementById('reel-select');
+  SITE_DATA.tapes.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.description;
+    sel.appendChild(opt);
+  });
+}
+
+function selectReel() {
+  const reelId = document.getElementById('reel-select').value;
+  document.getElementById('track-search').value = '';
+  if (!reelId) { document.getElementById('tracks-container').innerHTML = ''; return; }
+  const tracks = SITE_DATA.tracks_by_reel[reelId] || [];
+  renderTracks(tracks);
+}
+
+function searchTracks() {
+  const q = document.getElementById('track-search').value.toLowerCase().trim();
+  document.getElementById('reel-select').value = '';
+  if (!q) { document.getElementById('tracks-container').innerHTML = ''; document.getElementById('tracks-empty').style.display = 'none'; return; }
+  const all = [];
+  Object.values(SITE_DATA.tracks_by_reel).forEach(tracks => {
+    tracks.forEach(t => {
+      if (t.description.toLowerCase().includes(q)) all.push(t);
+    });
+  });
+  renderTracks(all);
+  document.getElementById('tracks-empty').style.display = all.length ? 'none' : 'block';
+}
+
+function renderTracks(tracks) {
+  const c = document.getElementById('tracks-container');
+  if (!tracks.length) { c.innerHTML = ''; return; }
+  c.innerHTML = tracks.map((t, i) => {
+    const url = `https://repository.library.brown.edu/studio/item/mets:${t.id}`;
+    return `<a class="track-item" href="${url}" target="_blank" rel="noopener">
+      <span class="track-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="track-title">${escapeHtml(t.description)}</span>
+      <span class="track-link">Open in BDR →</span>
+    </a>`;
+  }).join('');
+}
+
+// === NOTEBOOKS ===
+function initNotebooks() {
+  const c = document.getElementById('notebooks-container');
+  const nb = SITE_DATA.notebooks;
+  const icons = ['📓','📕','📗'];
+  let html = '';
+  Object.entries(nb).forEach(([key, data], i) => {
+    const mainUrl = `https://repository.library.brown.edu/studio/item/mets:${data.id}`;
+    html += `<div class="notebook-group">
+      <div class="notebook-header">
+        <div class="notebook-icon">${icons[i]}</div>
+        <div class="notebook-title"><a href="${mainUrl}" target="_blank">${escapeHtml(data.title)}</a></div>
+      </div>
+      <div class="insert-list">
+        ${data.inserts.map(ins => {
+          const iUrl = `https://repository.library.brown.edu/studio/item/mets:${ins.id}`;
+          return `<a class="insert-item" href="${iUrl}" target="_blank">${escapeHtml(ins.title)}</a>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  c.innerHTML = html;
+}
+
+// === GALLERY ===
+function initGallery() {
+  const c = document.getElementById('gallery-container');
+  c.innerHTML = SITE_DATA.gallery.map((img, i) =>
+    `<figure class="gallery-item" onclick="openLightbox(${i})">
+      <img src="${img.src}" alt="${escapeHtml(img.alt)}" loading="lazy">
+      <figcaption>${escapeHtml(img.caption)}</figcaption>
+    </figure>`
+  ).join('');
+}
+
+function openLightbox(i) {
+  const img = SITE_DATA.gallery[i];
+  document.getElementById('lightbox-img').src = img.src;
+  document.getElementById('lightbox-caption').textContent = img.caption;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+// === ESSAYS ===
+function showEssay(id) {
+  document.querySelectorAll('#essays .resource-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('#essays .resource-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('essay-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// === RESOURCES ===
+function showResource(id) {
+  document.querySelectorAll('#resources .resource-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('#resources .resource-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('resource-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function initGlossary() {
+  const terms = [
+    {term:"Calabash jongo", def:"A variety of jongo dance music accompanied by calabash drumming and singing. Also referred to as juntulla."},
+    {term:"Guem", def:"Special Kasena flute and drum ensemble music used to accompany musicians as they process from one place to another, before, during, or after larger performance events. Also known as venga and ninonga."},
+    {term:"Gullu (gulu, ngulu)", def:"Double-headed laced cylindrical drums struck with either two curved sticks or a hand and stick. Generally played in sets of four varying in size. From smallest to largest: gulbala, gulsanga, gulsoro, gulnia. Although traditionally made from wood, now often constructed from metal containers such as oil drums."},
+    {term:"Gungonga (guŋoŋa)", def:"An hourglass-shaped tension drum played with a single curved stick. Common in many areas of Ghana, also known as lunga, dondo, and donno."},
+    {term:"Gungongbala", def:"Higher pitched gungonga, or hourglass tension drum, in a set of two."},
+    {term:"Gungongnia", def:"Lower-pitched gungonga, or hourglass tension drum, in a set of two."},
+    {term:"Gungwe (guŋwe)", def:"Plural form of gungonga."},
+    {term:"Gwea", def:"A special walk done to guem music. What musicians do when they perform guem."},
+    {term:"Jongo (joŋo, dzoŋo)", def:"Kasena recreational music and dance genre performed during festive and celebratory occasions such as weddings, funerals of elders, or harvest festivals. Performed by men and women using various flute, drum, and idiophone combinations. The dance involves a stomping movement."},
+    {term:"Juntulla", def:"A dance music, also referred to as calabash jongo, performed by vocalists who accompany themselves on calabashes and metal pails. Considered a light form of jongo, often performed following a jongo session."},
+    {term:"Kaaku", def:"A millet-stalk reed instrument found in northern Ghana. Often used as a toy."},
+    {term:"Kalenge", def:'An old "spoiled" metal pail often used to accompany Kasena flute and drum ensemble music. Also known as keriga-keriga among other names.'},
+    {term:"Kasem", def:"The language of the Kasena people of northern Ghana."},
+    {term:"Kasena Flute and Drum Ensemble", def:"An ensemble of 5 to 20 performers consisting of flutes (wui), cylindrical drums (gullu), calabash drums (kori), hourglass tension drums (gungwe), basket rattles (sinye gule), and metal pails (kalenge). Standard arrangements include wui paired with gullu or kori."},
+    {term:"Kono (kɔnɔ)", def:"A popular three-stringed strummed lute commonly used by praise-singers to accompany their music in northern Ghanaian Kasena communities."},
+    {term:"Kora", def:"A drum constructed from a calabash frame and goat or sheep skin head, played with hands. Bits of metal or other material inside enhance its timbre."},
+    {term:"Kori", def:"The plural of kora. Played in pairs: korbala (higher pitched) and kornia (lower pitched)."},
+    {term:"Len yoro", def:"A type of praise song performed by a flute and drum ensemble as a prelude or warm up to jongo and other dances."},
+    {term:"Lilara", def:"A type of Kasena music associated with war."},
+    {term:"Linle", def:"A generic term for several kinds of female games or dances with music. Many jongo songs originated as linle songs."},
+    {term:"Nabona", def:"A set of six or seven side-blown ivory trumpets. Koetting noted nabona-playing was rare during his 1970s fieldwork."},
+    {term:"Nagila (nagilla, ngla)", def:"A Kasena dance for men accompanied by flute and drum music, described as particularly challenging. Also found in non-Kasena ensembles and cultural troupes throughout Ghana."},
+    {term:"Nagoro", def:"A special war music performed at Kasena funerals."},
+    {term:"Niguri", def:"Kasena war music."},
+    {term:"Nunonga", def:"A type of walking or processional music, like guem or venga le."},
+    {term:"Pe zara (p zara)", def:"A Kasena music and dance genre often played at weddings or funerals (before jongo), at dancers' request, and on royal occasions. Considered more stately than jongo."},
+    {term:"Sinye gule (siny gul)", def:"A pair of shakers constructed from a cut gourd filled with pebbles and covered with a woven basket."},
+    {term:"Wua (hua)", def:"Generic term for a Kasena vertical notched wooden flute. Most have two or three finger holes and are performed in sets of three, six, or more. May also be played solo by sheepherders or hunters."},
+    {term:"Wubala", def:"Higher-pitched flute of Kasena flute and drum ensembles. Usually plays the first part of a melody, answered by two lower-pitched flutes."},
+    {term:"Wugwe", def:"Pairs of small flutes (wui) played together, often with more than three finger holes. Also known as wusile and tagale."},
+    {term:"Wui (hui)", def:"Generic term for vertical notched flutes or whistles of the Kasena. Most have two or three finger holes. The three primary types: wubala (highest, leading role), wusanga, and wunia (lower, response parts)."},
+    {term:"Wunia", def:"A lower-pitched flute of Kasena flute and drum ensembles."},
+    {term:"Wusanga", def:"A lower-pitched flute of Kasena flute and drum ensembles."},
+    {term:"Venga", def:"A type of Kasena processional music often performed before jongo."},
+    {term:"Yongo (yoŋo)", def:"An ensemble of a pair of large notched flutes (yongo wui) and metal gongs played using iron finger rings. Only performed by Kasena musicians in northern Ghana during Koetting's fieldwork."},
+    {term:"Zunga (zuŋa)", def:"Kasem term for calabash. Also refers to calabashes played as instruments, struck with hands. Sizes include zunnia and zumbia."}
+  ];
+
+  const c = document.getElementById('glossary-container');
+  window._glossaryTerms = terms;
+  renderGlossary(terms);
+}
+
+function renderGlossary(terms) {
+  const c = document.getElementById('glossary-container');
+  c.innerHTML = terms.map(t =>
+    `<div class="glossary-term"><dt>${escapeHtml(t.term)}</dt><dd>${escapeHtml(t.def)}</dd></div>`
+  ).join('');
+}
+
+function filterGlossary() {
+  const q = document.getElementById('glossary-search').value.toLowerCase().trim();
+  if (!q) { renderGlossary(window._glossaryTerms); return; }
+  const filtered = window._glossaryTerms.filter(t =>
+    t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q)
+  );
+  renderGlossary(filtered);
+}
+
+function initIntro() {
+  document.getElementById('intro-content').innerHTML = `
+    <h2>Introduction to the Field Recordings Database</h2>
+    <p>In the summer of 2002, Brown graduate student and Ghanaian music specialist Mark Braun carried out a track-by-track analysis of the 142 reels of tape in the James T. Koetting Collection, creating a FileMaker database that became the foundation for the descriptive metadata used in this online collection.</p>
+    <p>Braun's basic organization, following the numbering of the original field tapes, was maintained along with his assignment of tracks and their numbering, with some adjustments when compared with the digitized recordings. The field notebooks—the source of much of his data—have been digitized and are included here.</p>
+    <p>Braun's work has been edited and augmented by Brown graduate student Julie Hunter, who carried out the difficult task of normalizing spelling, names of performers and performing groups, and adding information from further study of the Koetting field notebooks. The digitizing of the tapes was carried out in 2004 by Brown undergraduate Samuel Baltimore.</p>
+    <p>The tapes were played using a Nagra IV-L tape deck very similar to the one Koetting used to make the originals and were digitized at a 44.1 Hz sampling rate and 16-bit depth. The recordings heard here are MP3s derived from those digital masters.</p>
+    <p>The following tape numbers were missing from the original collection: 1, 3, 8, 34, 65, 106 and 147.</p>
+    <p class="credit">— Ned Quist, Project Coordinator</p>
+  `;
+}
+
+function initDesign() {
+  document.getElementById('design-content').innerHTML = `
+    <h2>Design of the Field Recordings Database</h2>
+    <p class="credit">Prepared by Mark Braun, under the supervision of Jeff Titon and Ned Quist. September 1, 2002.</p>
+
+    <h3>The Collection</h3>
+    <p>The Koetting Field Recordings Collection consists of 146 audio tape reels (5 and 7 inch), two "Recording Log" notebooks, and one "Project Log" notebook. The tapes contain music and interview material recorded in Ghana between October 23, 1973 and August 25, 1975 during Koetting's Ph.D. fieldwork. He held the distinction of research affiliate and visiting faculty member at the University of Ghana in Accra, and was conferred the Ph.D. by UCLA in 1980.</p>
+
+    <h3>The Database</h3>
+    <p>This database is a catalog of contents for the 143 reels that comprise the collection. The information has been gleaned from careful review of the audio material and examination of Koetting's Recording Log and Project Log. Most data comes directly from Koetting's notes, though interpretation was sometimes required. Users should be aware that many of Koetting's written comments are not reported in this database. Those intending to use the collection are advised to refer to Koetting's dissertation and field notebooks for additional information.</p>
+
+    <h3>Data Fields</h3>
+    <p><strong>Reel Number:</strong> Reflects numbers originally assigned by Koetting. Four reels use the letter "D" with a numeral, containing material dubbed from other reels for analysis. Seven reels are missing from the original collection of 153.</p>
+    <p><strong>Place of Recording:</strong> Koetting's documentation of recording site is generally excellent, often including performance venue in addition to town or region. Approximately 90% was recorded in Nima/Accra or Ghana's Northern Kasena region.</p>
+    <p><strong>Equipment Used:</strong> All indications are that Koetting used a full-track, mono Nagra machine. Akai and Hitachi models were used in reviewing material at the Legon sound laboratory.</p>
+    <p><strong>Track Title:</strong> Assigned titles are often descriptive. When proper titles are provided for composed pieces or traditional repertory songs, those titles are used. Roman numerals indicate repeated titles; lowercase letters indicate continuations.</p>
+    <p><strong>Field Situation:</strong> Describes the type of event or situation captured. Some were initiated by Koetting, others attended or happened upon. "Performance" signals musical or dance action, not necessarily implying an audience.</p>
+    <p><strong>Repertoire or Genre:</strong> This field is especially problematic. In Ghana, musical types are identified by performance context, instrumentation, or ethnic associations with no universally recognized classification system for traditional music.</p>
+    <p><strong>Instrumentation:</strong> Lists instruments using Koetting's terminology. Numbers of players are given in parentheses when documented.</p>
+    <p><strong>Related Language/Ethnic Group:</strong> Based on recording location and identity of persons recorded. Koetting's notes were not always consistent on this topic.</p>
+
+    <h3>Spelling</h3>
+    <p>African languages are generally represented using standard roman characters and additional symbols related to the International Phonetic Alphabet. In this database, foreign terms are generally spelled using only standard Roman alphabet characters, except for proper song titles or song texts. The majority of specialized terms come from the Kasim language.</p>
+  `;
+}
+
+function initBibliography() {
+  const sections = [
+    {
+      title: "The Scholarship of James T. Koetting",
+      entries: [
+        '1970. "An Analytical Study of Ashanti Kete Drumming." M.A. thesis, UCLA.',
+        '1970. "Analysis and Notation of West African Drum Ensemble Music." Selected Reports 1(3): 115-147.',
+        '1975. "The Effects of Urbanization: The Music of the Kasena People of Ghana." The World of Music 17(4): 23-31.',
+        '1977. "The Son Jalisciense: Structural Variety in Relation to a Mexican Forme Fixe." In Essays for a Humanist: An Offering to Klaus Wachsmann, 162-188.',
+        '1980. "Continuity and Change in Ghanaian Kasena Flute and Drum Ensemble Music." Ph.D. dissertation, UCLA.',
+        '1981. "Review: Texas-Mexican Border Music." With David Evans. Journal of American Folklore 94(373): 406-407.',
+        '1984. "Hocket Concept and Structure in Kasena Flute Ensemble Music." Selected Reports in Ethnomusicology 5: 160-172.',
+        '1984. "Africa/Ghana." In Worlds of Music, edited by Jeff Todd Titon. Schirmer Books.',
+        '1985. "Assessing Meter in Kasena Jongo." Sonus 5(2): 11-19.',
+        '1985. "The New Grove: Sub-Saharan Africa." Ethnomusicology 29(2): 314-317.',
+        '1985. "Review: Afro-American Music." Ethnomusicology 29(2): 330-333.',
+        '1986. Edited by Roderic Knight. "What Do We Know about African Rhythm?" Ethnomusicology 30(1): 58-63.',
+      ]
+    },
+    {
+      title: "Music and Society in Northern Ghana",
+      entries: [
+        'Aning, Ben. 1989. "Kakraba Lobi: Master Xylophonist of Ghana." African Musicology, vol. I.',
+        'Awedoba, A.K. 1985. "Aspects of Wealth and Exchange Among the Kasena-Nankana of Ghana." Ph.D., Oxford.',
+        'Awedoba, A.K. 1999. An Introduction to Kasena Society and Culture through Their Proverbs.',
+        'Awedoba, A.K. 2002. Studies in Kasem Phonetics and Phonology. Legon: Institute of African Studies.',
+        'Bebey, Francis. 1981. "Traditional Music in Upper Volta." Balafon 50: 22-27.',
+        'Cardinall, A.W. 1920. The Natives of the Northern Territories of the Gold Coast.',
+        'Chernoff, John Miller. 1985. "The Drums of Dagbon." In Repercussions.',
+        'Cudjoe-Calvocoressi, Dzagbe. 1970. "Flutes from the Northern and Upper Regions of Ghana."',
+        'DjeDje, Jacqueline Cogdell. 2008. Fiddling in West Africa. Indiana University Press.',
+        'Godsey, Larry. 1980. "The Use of the Xylophone in the Funeral Ceremony of the Birifor." Ph.D., UCLA.',
+        'Kinney, Sylvia. 1970. "Drummers in Dagbon." Ethnomusicology 14(2): 258-265.',
+        'Lentz, Carola. 2006. Ethnicity and the Making of History in Northern Ghana. Edinburgh University Press.',
+        'Locke, David. 1990. Drum Damba: Talking Drum Lessons.',
+        'Mensah, A.A. 1965. "Musicality and Musicianship in Northwest Ghana." Research Review II(1): 42-45.',
+        'Wiggins, Trevor. 1988. "Techniques of Variation in Northern Ghana." British Journal of Ethnomusicology 7: 117-142.',
+      ]
+    },
+    {
+      title: "Music in Ghana/Africa",
+      entries: [
+        'Agawu, Kofi. 1984. "The Impact of Language on Musical Compositions in Ghana." Ethnomusicology 28(1): 37-73.',
+        'Agawu, Kofi. 2003. Representing African Music. Routledge.',
+        'Ampene, Kwasi. 2005. Female Song Tradition and the Akan of Ghana. Ashgate.',
+        'Chernoff, John Miller. 1979. African Rhythm and African Sensibility. University of Chicago Press.',
+        'Cole, Catherine M. 2001. Ghana\'s Concert Party Theatre. Indiana University Press.',
+        'Collins, Johns. 1992. West African Pop Roots. Temple University Press.',
+        'Jones, A.M. 1959. Studies in African Music. 2 Vols. Oxford University Press.',
+        'Locke, David. 1978. "The Music of Atsiagbekor." Ph.D., Wesleyan University.',
+        'Locke, David. 1987. Drum Gahu: A Systematic Method for an African Percussion Piece.',
+        'Nketia, J.H. Kwabena. 1963. Drumming in Akan Communities of Ghana.',
+        'Nketia, J.H. Kwabena. 1963. African Music in Ghana. Northwestern University Press.',
+        'Nketia, J.H. Kwabena. 1974. The Music of Africa. W.W. Norton.',
+        'Stone, Ruth M. 1985. "In Search of Time in African Music." Music Theory Spectrum 7: 139-48.',
+        'Temperley, David. 2000. "Meter and Grouping in African Music." Ethnomusicology 44: 65-96.',
+      ]
+    },
+    {
+      title: "Histories and Practices of Ethnomusicology",
+      entries: [
+        'Barz, Gregory F. and Timothy J. Cooley, ed. 2008. Shadows in the Field. Oxford University Press.',
+        'Clifford, James and George E. Marcus, ed. 1986. Writing Culture. UC Press.',
+        'Hood, Mantle. 1971. The Ethnomusicologist. McGraw-Hill.',
+        'Merriam, Alan. 1964. The Anthropology of Music. Northwestern University Press.',
+        'Nettl, Bruno. 1964. Theory and Method in Ethnomusicology. Collier-Macmillan.',
+        'Titon, Jeff. 1980. "The Life Story." Journal of American Folklore 93: 276-292.',
+      ]
+    }
+  ];
+
+  document.getElementById('bibliography-container').innerHTML = sections.map(s =>
+    `<div class="bib-section"><h3>${s.title}</h3>${s.entries.map(e =>
+      `<div class="bib-entry">${escapeHtml(e)}</div>`
+    ).join('')}</div>`
+  ).join('');
+}
+
+function initDiscography() {
+  const entries = [
+    'Africa: Drum, Chant & Instrumental Music. 1988. Stephen Jay. Elektra/Nonesuch.',
+    'African Rhythm and African Sensibility. 1981. Cassette. Recorded by John Chernoff. University of Chicago Press.',
+    'Bewaare, They are Coming: Dagaara Songs and Dances from Nandom, Ghana. 1996. Pan Records.',
+    'Burkina Faso: Rhythms of the Grasslands. 2002. Recording by Kathleen Johnson. Nonesuch Records.',
+    'Burkina Faso: Savannah Rhythms. 2002. Recording by Kathleen Johnson. Nonesuch Records.',
+    'Female Song Tradition and the Akan of Ghana. 2005. Compiled by Kwasi Ampene. Ashgate.',
+    'Ghana: Ancient Ceremonies, Songs, and Dance Music. 1991. Elektra Nonesuch.',
+    'Ghana: Music of the Northern Tribes. 1976. Recorded by Verna Gillis. Lyrichord Discs.',
+    'Ghana: Rhythms of the People. 2000. Recorded by Paschel Y. Younge and Maria Billings. Multicultural Media.',
+    'J.H. Kwabena Nketia: Selected Pieces. 2003. University of Ghana.',
+    'Kakraba Lobi Live. 1994. Tokyo: Conversation.',
+    'Master Drummers of Dagbon, Volume 1. 1992. Recorded by John Chernoff. Rounder Records.',
+    'Master Drummers of Dagbon, Volume 2. 1990. Recorded by John Chernoff. Rounder Records.',
+    'Master Fiddlers of Dagbon. 2001. Recorded by John Chernoff. Rounder Records.',
+    'Mustapha Tettey Addy: Master Drummer from Ghana. 1974. Lyrichord.',
+    'Music of the Dagomba from Ghana. 1978. Folkways Records (Smithsonian Global Sound).',
+    'Music of the Ashanti of Ghana. 1979. Folkways Records (Smithsonian Global Sound).',
+    'Music of the Ewe of Ghana. 1969. Folkways Records (Smithsonian Global Sound).',
+    'Rhythms of Life, Songs of Wisdom: Akan Music from Ghana. 1996. Smithsonian Folkways.',
+    'Songs of Legaa: Master Musician from Ghana. 2000. Kakraba Lobi.',
+    'Traditional Drumming and Dances of Ghana. 1976. Recorded by John Tanson. Folkways Records.',
+    'Traditional Songs and Dances from Africa. 2000. Adzido Pan African Dance Ensemble. ARC Music.',
+    "Traditional Women's Music From Ghana. 1981. Recorded by Verna Gillis. Folkways Records.",
+    "Worlds of Music. 2009. 5th Edition. Edited by Jeff Todd Titon. Schirmer.",
+  ];
+  document.getElementById('discography-content').innerHTML = '<h2>Discography</h2><p class="credit">Compiled by Julie Hunter</p>' +
+    entries.map(e => `<div class="bib-entry">${escapeHtml(e)}</div>`).join('');
+}
+
+// === UTILITIES ===
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded', () => {
+  initRecordings();
+  initNotebooks();
+  initGallery();
+  initGlossary();
+  initIntro();
+  initDesign();
+  initBibliography();
+  initDiscography();
+
+  // Handle hash navigation
+  const hash = window.location.hash.replace('#','');
+  if (hash && document.getElementById(hash)) showSection(hash);
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
+</body>
+</html>
